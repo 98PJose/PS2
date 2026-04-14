@@ -8,7 +8,8 @@
       "Read(//c/Users/PJ/Desktop/Modeling Risk/**)",
       "Bash(python -c ':*)",
       "Bash(pip install:*)",
-      "Bash(python -m exercise2.main)"
+      "Bash(python -m exercise2.main)",
+      "Bash(powershell -Command \"\\(Get-Item 'C:/Users/PJ/Desktop/Modeling Risk/Copula_slides.pdf'\\).Length\")"
     ]
   }
 }
