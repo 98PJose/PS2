@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.0] - 2026-04-14
+
+### Added
+- `exercise3/nm_copula.py`: Bivariate Normal Mixture (NM) copula conditional CDF and numerical q-quantile inversion. `nm_conditional_cdf` evaluates C^NM(u_1|u_2) vectorised; `nm_quantile_u1` / `nm_quantile_curve` invert on u_1 with `scipy.optimize.brentq` (strictly monotone in u_1, so a unique root exists for every q in (0,1)).
+- `exercise3/plotting.py`: Two-panel figure `fig_3_nm_quantile_curves.png` showing the q-quantile curves both on the unit square (u_2, u_1) and on the N(0,1) return scale (r_2 = Phi^{-1}(u_2), r_1 = Phi^{-1}(u_1)).
+- `exercise3/main.py`: Orchestrator for Exercise 3. Reports verification that C^NM(hat{u}_1|u_2) equals q at the solved roots, plus tables of u_1 and r_1 at representative conditioning values.
+- `config.json`: Added `exercise3` block with pi = 0.3, rho_1 = -0.7, rho_2 = 0.4, q ∈ {0.05, 0.25, 0.5, 0.75, 0.95}, grid size 401, and eps = 1e-4.
+- `readme.html`: Added Exercise 3 section with the NM copula formula, q-quantile definition, module documentation, configuration table, and a note on the slide-consistent u_1-inversion convention adopted (the literal "back out u_2" reading of the problem text admits no solution for q outside (0.3, 0.7) with the given parameters).
+
 ## [2.0.0] - 2026-04-14
 
 ### Added

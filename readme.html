@@ -23,7 +23,7 @@
 <h1>Modeling Risk — Problem Set 2026</h1>
 <p><strong>Course:</strong> Modeling Risk &mdash; Problem Set 2026<br>
 <strong>Language:</strong> Python 3.10+<br>
-<strong>Last updated:</strong> 2026-04-14</p>
+<strong>Last updated:</strong> 2026-04-14 (Exercise 3 added)</p>
 
 <h2>1. Project Structure</h2>
 <pre>
@@ -32,6 +32,11 @@ PS2/
 ├── requirements.txt         # pip install -r requirements.txt
 ├── readme.html              # This file
 ├── changelog.md             # Version history
+├── exercise3/
+│   ├── __init__.py
+│   ├── nm_copula.py         # Normal Mixture copula conditional CDF and quantile solver
+│   ├── plotting.py          # Quantile-curve plot (unit square and return scale)
+│   └── main.py              # Orchestrator: runs 3
 ├── exercise1/
 │   ├── __init__.py
 │   ├── copula_sim.py        # Copula simulation (Clayton, SurvClayton, Gaussian, t, FGM)
@@ -303,6 +308,78 @@ where A(v) = &Gamma;((v+n)/2) &Gamma;(v/2)<sup>n-1</sup> / &Gamma;((v+1)/2)<sup>
 
 <h3>8.3 Part 2.4 — DCC under Student t Copula</h3>
 <p>Estimates (a, b, &nu;) under the t copula with EDF marginals. The t copula accounts for tail dependence via the degrees-of-freedom parameter &nu;. Lower &nu; implies heavier joint tails. The t copula LL should be at least as high as the Gaussian copula LL (the Gaussian is the limiting case &nu; &rarr; &infin;).</p>
+
+<hr>
+
+<h1 id="exercise3">Exercise 3 — NM Copula q-Quantile Curves</h1>
+
+<h2>9. Exercise 3 Project Structure</h2>
+<pre>
+exercise3/
+├── __init__.py
+├── nm_copula.py     # Conditional CDF and numerical quantile inversion
+├── plotting.py      # Two-panel quantile-curve figure
+└── main.py          # Orchestrator for Exercise 3
+</pre>
+
+<h2>10. Mathematical Setup</h2>
+
+<p>The bivariate Normal Mixture (NM) copula is a mixture of two Gaussian copulas sharing the same uniform margins but differing in correlation:</p>
+
+<div class="eq">
+C<sup>NM</sup>(u<sub>1</sub>, u<sub>2</sub>) = &pi; &middot; C<sup>G</sup>(u<sub>1</sub>, u<sub>2</sub>; &rho;<sub>1</sub>) + (1 &minus; &pi;) &middot; C<sup>G</sup>(u<sub>1</sub>, u<sub>2</sub>; &rho;<sub>2</sub>), &nbsp; &pi; &isin; (0, 1).
+</div>
+
+<p>Because differentiation is linear, the <strong>conditional CDF</strong> of U<sub>1</sub> given U<sub>2</sub> = u<sub>2</sub> is the weighted mixture of the two Gaussian conditional CDFs (problem statement, Exercise 3):</p>
+
+<div class="eq">
+C<sup>NM</sup>(u<sub>1</sub> | u<sub>2</sub>) =
+&pi; &middot; &Phi;&left;((&Phi;<sup>&minus;1</sup>(u<sub>1</sub>) &minus; &rho;<sub>1</sub> &Phi;<sup>&minus;1</sup>(u<sub>2</sub>)) / &radic;(1 &minus; &rho;<sub>1</sub><sup>2</sup>)&right;)
++ (1 &minus; &pi;) &middot; &Phi;&left;((&Phi;<sup>&minus;1</sup>(u<sub>1</sub>) &minus; &rho;<sub>2</sub> &Phi;<sup>&minus;1</sup>(u<sub>2</sub>)) / &radic;(1 &minus; &rho;<sub>2</sub><sup>2</sup>)&right;).
+</div>
+
+<p>A <strong>q-quantile curve</strong> is the locus of points (u<sub>1</sub>, u<sub>2</sub>) satisfying C<sup>NM</sup>(u<sub>1</sub> | u<sub>2</sub>) = q, for a fixed probability q &isin; (0, 1). Following Section 9 of the course slides, u<sub>2</sub> is placed on the x-axis and u<sub>1</sub> is solved for numerically on the y-axis. Because the right-hand side is a sum of two Phi terms (not a single Phi), there is no closed-form inverse &mdash; <code>scipy.optimize.brentq</code> is used instead. The conditional CDF is strictly increasing in u<sub>1</sub> (each Phi is increasing and both mixture weights are positive), so a unique root exists for any q in (0, 1).</p>
+
+<div class="note">
+<strong>Note on notation.</strong> The problem text phrases the inversion as "back out a value of u<sub>2</sub> from C<sup>NM</sup>(u<sub>1</sub> | u<sub>2</sub>) = q". Taken literally with &pi; = 0.3, &rho;<sub>1</sub> = &minus;0.7, &rho;<sub>2</sub> = 0.4, the map u<sub>2</sub> &#8614; C<sup>NM</sup>(u<sub>1</sub> | u<sub>2</sub>) is not monotone onto (0, 1); its limiting values at u<sub>2</sub> &rarr; 0 and u<sub>2</sub> &rarr; 1 are 0.7 and 0.3 respectively, so q &isin; {0.05, 0.25, 0.75, 0.95} would have no solution. Inverting in u<sub>1</sub> is strictly monotone, delivers a solution for every q in (0, 1), and matches the convention used for all other copulas in the slides. This is the convention adopted here.
+</div>
+
+<h2>11. Exercise 3 Module Documentation</h2>
+
+<h3>11.1 <code>nm_copula.py</code></h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>nm_conditional_cdf(u1, u2, pi, rho1, rho2)</code></td><td>Vectorised evaluation of C<sup>NM</sup>(u<sub>1</sub>|u<sub>2</sub>).</td></tr>
+<tr><td><code>nm_quantile_u1(u2, q, pi, rho1, rho2)</code></td><td>Brent root-finder on (eps, 1&minus;eps) for a single point.</td></tr>
+<tr><td><code>nm_quantile_curve(u2_grid, q, pi, rho1, rho2)</code></td><td>Loops <code>nm_quantile_u1</code> over the u<sub>2</sub> grid.</td></tr>
+</table>
+
+<h3>11.2 <code>plotting.py</code></h3>
+<p>Produces <code>fig_3_nm_quantile_curves.png</code>, a 1&times;2 figure:</p>
+<ul>
+<li><strong>Left panel:</strong> quantile curves on the unit square (u<sub>2</sub>, u<sub>1</sub>).</li>
+<li><strong>Right panel:</strong> same curves mapped to N(0,1) returns r<sub>i</sub> = &Phi;<sup>&minus;1</sup>(u<sub>i</sub>). Because the marginals are N(0,1) (Exercise 3 assumption), this is the curve in the (r<sub>1</sub>, r<sub>2</sub>) plane of actual stock returns.</li>
+</ul>
+
+<h3>11.3 <code>main.py</code></h3>
+<p>Reads the <code>exercise3</code> block of <code>config.json</code>, builds a u<sub>2</sub> grid of <code>n_grid</code> points on (eps, 1&minus;eps), invokes <code>plot_quantile_curves</code>, and prints two sanity tables: (i) C<sup>NM</sup>(&ucirc;<sub>1</sub> | u<sub>2</sub>) evaluated at the solved roots (should match q), and (ii) the solved u<sub>1</sub> and r<sub>1</sub> at a handful of representative u<sub>2</sub> / r<sub>2</sub> values.</p>
+
+<h2>12. Configuration &mdash; Exercise 3 block</h2>
+<table>
+<tr><th>Key</th><th>Value</th><th>Meaning</th></tr>
+<tr><td><code>pi</code></td><td>0.3</td><td>Mixture weight of component 1</td></tr>
+<tr><td><code>rho1</code></td><td>&minus;0.7</td><td>Correlation of Gaussian component 1</td></tr>
+<tr><td><code>rho2</code></td><td>0.4</td><td>Correlation of Gaussian component 2</td></tr>
+<tr><td><code>q_values</code></td><td>[0.05, 0.25, 0.5, 0.75, 0.95]</td><td>Quantile levels to plot</td></tr>
+<tr><td><code>n_grid</code></td><td>401</td><td>u<sub>2</sub> grid resolution</td></tr>
+<tr><td><code>eps</code></td><td>1e-4</td><td>Boundary padding (Phi<sup>&minus;1</sup> blows up at 0 and 1)</td></tr>
+</table>
+
+<h2>13. Usage</h2>
+<pre>
+cd PS2
+python -m exercise3.main
+</pre>
 
 </body>
 </html>
