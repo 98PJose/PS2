@@ -178,7 +178,7 @@ def _ll_dcc_t(params, u, Omega_z, n):
             - n * gammaln((nu + 1) / 2))
 
     I_n = np.eye(n)
-    ll = T_obs / 2 * ln_A
+    ll = T_obs * ln_A
 
     for t in range(T_obs):
         Psi_t = Psi_list[t]

@@ -1,0 +1,35 @@
+==============================================================================
+Empirical VaR failure rates - Clayton DGP, 3 candidate models
+  Rejections: *  -> 95% significance,  ** -> 99% significance
+==============================================================================
+
+95% VaR  (nominal alpha = 5%)
+  DGP theta      gaussian           t     clayton
+  theta = 0.5      4.60%       4.90%       4.20%
+  theta = 1.5      7.40%**     7.20%**     5.60%
+  theta = 2.5      6.80%*      6.80%*      5.70%
+
+99% VaR  (nominal alpha = 1%)
+  DGP theta      gaussian           t     clayton
+  theta = 0.5      1.70%*      1.80%*      1.10%
+  theta = 1.5      1.70%*      1.30%       0.90%
+  theta = 2.5      1.90%*      1.90%*      1.70%*
+
+==============================================================================
+Average fitted parameters across replications
+==============================================================================
+
+  DGP Clayton theta = 0.5
+    Gaussian: rho_hat   = +0.3169  (sd 0.0282)
+    t       : rho_hat   = +0.3148  (sd 0.0279)  nu_hat = 3911541.24  (sd 66448425.56)
+    Clayton : theta_hat = +0.5006  (sd 0.0474)
+
+  DGP Clayton theta = 1.5
+    Gaussian: rho_hat   = +0.6089  (sd 0.0198)
+    t       : rho_hat   = +0.6159  (sd 0.0188)  nu_hat = 7.34  (sd 2.33)
+    Clayton : theta_hat = +1.4989  (sd 0.0760)
+
+  DGP Clayton theta = 2.5
+    Gaussian: rho_hat   = +0.7362  (sd 0.0156)
+    t       : rho_hat   = +0.7499  (sd 0.0139)  nu_hat = 5.10  (sd 0.98)
+    Clayton : theta_hat = +2.5010  (sd 0.1012)

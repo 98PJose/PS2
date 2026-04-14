@@ -16,7 +16,11 @@
       "Bash(cd /tmp)",
       "Bash(cp \"C:/Users/PJ/Desktop/Modeling Risk/BS.m\" BS.zip)",
       "Bash(unzip -o BS.zip)",
-      "Bash(python -m exercise4.main)"
+      "Bash(python -m exercise4.main)",
+      "Bash(python -m exercise5.main)",
+      "Bash(tee /tmp/ex5_run.log)",
+      "Bash(ps -W)",
+      "Bash(tasklist //FI \"IMAGENAME eq python.exe\")"
     ]
   }
 }

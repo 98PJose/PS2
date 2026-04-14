@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.0.0] - 2026-04-15
+
+### Added
+- `exercise5/dgp.py`: Clayton DGP with N(0,1) marginals (reuses `sim_clayton` from `exercise1.copula_sim`) matching Berger (2016) Section 3.1.
+- `exercise5/estimation.py`: Copula MLE with marginals fixed at N(0,1). `estimate_gaussian` reuses `ll_gaussian_copula`, `estimate_t` reuses `ll_t_copula` on a tanh/log reparameterisation, and a new `clayton_log_density` + `estimate_clayton` derive the Clayton copula density analytically and optimise by bounded Brent.
+- `exercise5/var_forecast.py`: Empirical portfolio VaR from 10 000 simulated returns drawn from the fitted copula (Berger eq 9). Uses `sim_gaussian`, `sim_student_t`, `sim_clayton` from `exercise1`.
+- `exercise5/backtesting.py`: Kupiec unconditional-coverage test (eq 11) with chi-square(1) p-value and 95% / 99% rejection flags; handles N = 0 and N = T boundary cases.
+- `exercise5/simulation.py`: Monte-Carlo driver; optionally parallel via `ProcessPoolExecutor`.
+- `exercise5/plotting.py`: Grouped bar chart of empirical failure rates with Kupiec rejection annotations and nominal reference line.
+- `exercise5/main.py`: Orchestrator producing a Berger-Table-2-style summary, `figures/tab_5_failure_rates.txt` (saved table + fitted-parameter summary), and `fig_5_failure_rates.png`.
+- `config.json`: Added `exercise5` block (theta ∈ {0.5, 1.5, 2.5}, n_obs=1001, n_sim=10 000, n_rep=1000, weights=[0.5, 0.5]). Note: paper uses n_rep=10 000.
+- `readme.html`: Added Exercise 5 section (simulation design, module documentation, configuration, usage).
+
 ## [4.0.0] - 2026-04-14
 
 ### Added

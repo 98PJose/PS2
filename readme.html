@@ -23,7 +23,7 @@
 <h1>Modeling Risk — Problem Set 2026</h1>
 <p><strong>Course:</strong> Modeling Risk &mdash; Problem Set 2026<br>
 <strong>Language:</strong> Python 3.10+<br>
-<strong>Last updated:</strong> 2026-04-14 (Exercises 3–4 added)</p>
+<strong>Last updated:</strong> 2026-04-15 (Exercises 3–5 added)</p>
 
 <h2>1. Project Structure</h2>
 <pre>
@@ -61,6 +61,15 @@ PS2/
 │   ├── stats.py             # Mean, volatility, skewness, kurtosis over the strike grid
 │   ├── plotting.py          # 4 curves per scenario (one line per copula model)
 │   └── main.py              # Orchestrator: runs 4.1–4.4
+├── exercise5/
+│   ├── __init__.py
+│   ├── dgp.py               # Clayton DGP with N(0,1) marginals
+│   ├── estimation.py        # MLE for Gaussian / t / Clayton copulas (known margins)
+│   ├── var_forecast.py      # Empirical VaR quantiles from fitted copula
+│   ├── backtesting.py       # Kupiec LR_UC test
+│   ├── simulation.py        # Monte-Carlo driver across replications
+│   ├── plotting.py          # Grouped bar chart of empirical failure rates
+│   └── main.py              # Orchestrator: runs 5
 └── figures/                 # Output directory for generated plots
 </pre>
 
@@ -481,6 +490,93 @@ R<sub>PP</sub>(K, T) = [S<sub>2T</sub> + max(K &minus; S<sub>1T</sub>, 0)] / [S<
 <pre>
 cd PS2
 python -m exercise4.main
+</pre>
+
+<hr>
+
+<h1 id="exercise5">Exercise 5 — Berger (2016) Simulation Study</h1>
+
+<h2>20. Exercise 5 Project Structure</h2>
+<pre>
+exercise5/
+├── __init__.py
+├── dgp.py            # Clayton DGP with N(0,1) marginals
+├── estimation.py     # MLE for Gaussian / t / Clayton copulas (N(0,1) margins known)
+├── var_forecast.py   # Empirical VaR quantiles from the fitted copula
+├── backtesting.py    # Kupiec LR_UC test
+├── simulation.py     # Monte-Carlo driver across replications
+├── plotting.py       # Grouped bar chart of empirical failure rates
+└── main.py           # Orchestrator
+</pre>
+
+<h2>21. Simulation Design</h2>
+
+<p>Following Berger (2016, Section 3.1) with the problem-set restriction that the data generating process (DGP) is the <strong>bivariate Clayton copula</strong> at three parameter values (&theta; &isin; {0.5, 1.5, 2.5}, Table 1 of the paper) and both marginals are N(0,1).</p>
+
+<p>One Monte-Carlo replication:</p>
+<ol>
+<li><strong>Generate</strong> T + 1 = 1001 bivariate Clayton(θ) observations with N(0,1) marginals via the conditional simulator from <code>exercise1.copula_sim</code>.</li>
+<li>Keep the first T = 1000 as the in-sample window; the last observation (r<sub>1001</sub>) is the out-of-sample realisation used for backtesting.</li>
+<li><strong>Estimate</strong> three candidate copulas on the in-sample window by MLE with the N(0,1) marginals held fixed: Gaussian (&rho;), Student t (&rho;, &nu;), and Clayton (&theta;). Fixing the marginals isolates the "isolated impact of copulas" — the stated aim of Berger (2016).</li>
+<li><strong>Forecast VaR.</strong> From each fitted copula draw 10 000 bivariate uniforms, map to returns via &Phi;<sup>&minus;1</sup>, build the equal-weighted portfolio r<sub>p,sim</sub> = 0.5 r<sub>1,sim</sub> + 0.5 r<sub>2,sim</sub>, and read off the 5% and 1% empirical quantiles.</li>
+<li><strong>Breach check.</strong> Record I = 1 whenever r<sub>p, 1001</sub> &lt; VaR<sub>&alpha;</sub>.</li>
+</ol>
+
+<p>Steps 1–5 are repeated <code>n_rep</code> times per scenario and the aggregated breach counts are sent to the Kupiec unconditional-coverage test:</p>
+<div class="eq">
+LR<sub>UC</sub> = &minus;2 ln[(1 &minus; p)<sup>T&minus;N</sup> p<sup>N</sup>] + 2 ln[(1 &minus; N/T)<sup>T&minus;N</sup> (N/T)<sup>N</sup>] &nbsp;~ &nbsp; &chi;<sup>2</sup>(1) &nbsp;&nbsp; (eq 11)
+</div>
+<p>where N is the total breach count and T = <code>n_rep</code>. H<sub>0</sub>: p = N/T (empirical = nominal failure rate). Rejections are tagged "*" (5%) or "**" (1%), matching Berger's Table 2 notation.</p>
+
+<div class="note">
+<strong>Monte-Carlo budget.</strong> Berger sets n_rep = 10 000; we default to n_rep = 1000 for runtime and expose it in <code>config.json</code>. At n_rep = 1000 the standard error of the hit rate is about 0.7 percentage points at &alpha; = 5% and 0.3 percentage points at &alpha; = 1%, comfortably small enough to reproduce the qualitative pattern of Table 2.
+</div>
+
+<h2>22. Exercise 5 Module Documentation</h2>
+
+<h3>22.1 <code>dgp.py</code></h3>
+<p><code>simulate_clayton_returns(n_obs, theta, rng)</code> — generates n_obs bivariate Clayton(θ) uniforms via <code>sim_clayton</code>, clips them to (&epsilon;, 1 &minus; &epsilon;), and returns both the (n_obs, 2) N(0,1) returns (r<sub>i</sub> = &Phi;<sup>&minus;1</sup>(u<sub>i</sub>)) and the underlying uniforms.</p>
+
+<h3>22.2 <code>estimation.py</code></h3>
+<table>
+<tr><th>Function</th><th>Description</th><th>Optimizer</th></tr>
+<tr><td><code>estimate_gaussian(r1, r2)</code></td><td>MLE of Gaussian &rho; with N(0,1) margins (reuses <code>ll_gaussian_copula</code>).</td><td>bounded Brent on [&minus;0.9999, 0.9999]</td></tr>
+<tr><td><code>estimate_t(r1, r2)</code></td><td>MLE of (&rho;, &nu;); enforces &rho; &isin; (&minus;1, 1), &nu; &gt; 2 via tanh/log re-parameterisation.</td><td>Nelder-Mead</td></tr>
+<tr><td><code>estimate_clayton(r1, r2)</code></td><td>MLE of &theta; using the Clayton log-density derived in-module.</td><td>bounded Brent on (0.01, 30)</td></tr>
+<tr><td><code>clayton_log_density(u1, u2, theta)</code></td><td>ln c<sup>Cla</sup>(u<sub>1</sub>, u<sub>2</sub>; &theta;) = ln(1 + &theta;) &minus; (1 + &theta;)(ln u<sub>1</sub> + ln u<sub>2</sub>) &minus; (2 + 1/&theta;) ln(u<sub>1</sub><sup>&minus;&theta;</sup> + u<sub>2</sub><sup>&minus;&theta;</sup> &minus; 1).</td><td>—</td></tr>
+</table>
+
+<h3>22.3 <code>var_forecast.py</code></h3>
+<p><code>simulate_portfolio_returns(copula_name, params, n_sim, rng, weights)</code> draws fresh bivariate uniforms from the fitted copula, transforms to N(0,1) returns, and returns the equal-weighted portfolio vector. <code>var_quantiles</code> computes the empirical &alpha;-quantiles.</p>
+
+<h3>22.4 <code>backtesting.py</code></h3>
+<p><code>kupiec_uc(n_breaches, n_forecasts, p)</code> implements equation (11) with careful handling of the N = 0 and N = T boundary cases and returns the test statistic, the &chi;<sup>2</sup>(1) p-value, and rejection flags at the 95% and 99% confidence levels.</p>
+
+<h3>22.5 <code>simulation.py</code></h3>
+<p><code>run_scenario(theta_true, n_obs, n_sim, n_rep, weights, base_seed, n_jobs)</code> loops over the requested number of replications (optionally via <code>ProcessPoolExecutor</code> when <code>n_jobs</code> &gt; 1), aggregates the per-(model, &alpha;) breach counts, and applies <code>kupiec_uc</code>. Returns both the test results and the history of fitted parameters.</p>
+
+<h3>22.6 <code>plotting.py</code></h3>
+<p><code>fig_5_failure_rates.png</code> — grouped bar chart across the three &theta;-DGP scenarios, with stars annotating the Kupiec rejections and a horizontal reference line at the nominal level.</p>
+
+<h3>22.7 <code>main.py</code></h3>
+<p>Reads the <code>exercise5</code> block of <code>config.json</code>, runs the three DGP scenarios, prints a Berger-Table-2-style summary table (with "*" / "**" rejection markers), and saves the figure.</p>
+
+<h2>23. Configuration — Exercise 5 block</h2>
+<table>
+<tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>theta_values</code></td><td>[0.5, 1.5, 2.5]</td><td>True Clayton parameter per scenario (Berger Table 1)</td></tr>
+<tr><td><code>n_obs</code></td><td>1001</td><td>Observations per replication (1000 in-sample + 1 out-of-sample)</td></tr>
+<tr><td><code>n_sim</code></td><td>10 000</td><td>Inner copula draws used to compute each VaR forecast</td></tr>
+<tr><td><code>n_rep</code></td><td>1000</td><td>Monte-Carlo replications per scenario (Berger uses 10 000)</td></tr>
+<tr><td><code>weights</code></td><td>[0.5, 0.5]</td><td>Equal-weight bivariate portfolio</td></tr>
+<tr><td><code>base_seed</code></td><td>5001</td><td>Seed offset for reproducibility</td></tr>
+<tr><td><code>n_jobs</code></td><td>1</td><td>Parallel workers (raise to speed up the outer loop)</td></tr>
+</table>
+
+<h2>24. Usage</h2>
+<pre>
+cd PS2
+python -m exercise5.main
 </pre>
 
 </body>
