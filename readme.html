@@ -23,7 +23,7 @@
 <h1>Modeling Risk — Problem Set 2026</h1>
 <p><strong>Course:</strong> Modeling Risk &mdash; Problem Set 2026<br>
 <strong>Language:</strong> Python 3.10+<br>
-<strong>Last updated:</strong> 2026-04-14 (Exercise 3 added)</p>
+<strong>Last updated:</strong> 2026-04-14 (Exercises 3–4 added)</p>
 
 <h2>1. Project Structure</h2>
 <pre>
@@ -32,11 +32,6 @@ PS2/
 ├── requirements.txt         # pip install -r requirements.txt
 ├── readme.html              # This file
 ├── changelog.md             # Version history
-├── exercise3/
-│   ├── __init__.py
-│   ├── nm_copula.py         # Normal Mixture copula conditional CDF and quantile solver
-│   ├── plotting.py          # Quantile-curve plot (unit square and return scale)
-│   └── main.py              # Orchestrator: runs 3
 ├── exercise1/
 │   ├── __init__.py
 │   ├── copula_sim.py        # Copula simulation (Clayton, SurvClayton, Gaussian, t, FGM)
@@ -53,6 +48,19 @@ PS2/
 │   ├── dcc.py               # DCC model (Gaussian and Student t copulas)
 │   ├── plotting.py          # Dynamic correlation plots and model comparison
 │   └── main.py              # Orchestrator: runs 2.1–2.4
+├── exercise3/
+│   ├── __init__.py
+│   ├── nm_copula.py         # Normal Mixture copula conditional CDF and quantile solver
+│   ├── plotting.py          # Quantile-curve plot (unit square and return scale)
+│   └── main.py              # Orchestrator: runs 3
+├── exercise4/
+│   ├── __init__.py
+│   ├── black_scholes.py     # Black–Scholes call/put pricing (BS.m port)
+│   ├── option_portfolio.py  # Call+stock portfolio payoff/return simulation
+│   ├── copulas.py           # Bivariate Gaussian / t / Clayton simulation (return-scale)
+│   ├── stats.py             # Mean, volatility, skewness, kurtosis over the strike grid
+│   ├── plotting.py          # 4 curves per scenario (one line per copula model)
+│   └── main.py              # Orchestrator: runs 4.1–4.4
 └── figures/                 # Output directory for generated plots
 </pre>
 
@@ -63,6 +71,10 @@ cd PS2
 python -m exercise1.main
 </pre>
 <p>All parameters are read from <code>config.json</code>. To change copula parameters, portfolio weights, number of simulations, seeds, etc., edit that file.</p>
+
+<hr>
+
+<h1 id="exercise1">Exercise 1 — Copula Simulation, Portfolio Analysis, and IFM Estimation</h1>
 
 <h2>3. Module Documentation</h2>
 
@@ -379,6 +391,96 @@ C<sup>NM</sup>(u<sub>1</sub> | u<sub>2</sub>) =
 <pre>
 cd PS2
 python -m exercise3.main
+</pre>
+
+<hr>
+
+<h1 id="exercise4">Exercise 4 — Option-based Portfolios under Alternative Copulas</h1>
+
+<h2>14. Exercise 4 Project Structure</h2>
+<pre>
+exercise4/
+├── __init__.py
+├── black_scholes.py    # Closed-form call/put prices (port of BS.m)
+├── copulas.py          # Bivariate shock generators with N(0,1) marginals
+├── option_portfolio.py # cc / cc2 / pp / pp2 return formulas (eq 4, 5)
+├── stats.py            # MATLAB-convention mean/std/skew/kurt over strike grid
+├── plotting.py         # 4-panel figure per scenario
+└── main.py             # Orchestrator for 4.1–4.4
+</pre>
+
+<h2>15. Setup and Formulas</h2>
+
+<p>Two assets follow geometric Brownian motion with identical parameters (slides, p. 14):</p>
+<div class="eq">
+S<sub>i,T</sub> = S<sub>i,0</sub> exp[(&mu;<sub>i</sub> &minus; &sigma;<sub>i</sub><sup>2</sup>/2) T + &sigma;<sub>i</sub> &radic;T &middot; Z<sub>i</sub>], &nbsp; Z<sub>i</sub> ~ N(0,1).
+</div>
+<p>The Z<sub>i</sub> marginals are held to N(0,1); the <em>dependence</em> between them is determined by the copula of the scenario. Under the Gaussian copula we use the Cholesky recombination Z<sub>2</sub> = &rho; Z<sub>1</sub> + &radic;(1 &minus; &rho;<sup>2</sup>) &epsilon; (matches MATLAB <code>ccK_simuRet2.m</code>). Under the t and Clayton copulas we simulate dependent uniforms U<sub>i</sub> with the routines from <code>exercise1.copula_sim</code> and set Z<sub>i</sub> = &Phi;<sup>&minus;1</sup>(U<sub>i</sub>).</p>
+
+<p>Four portfolios, all with holding period T:</p>
+<div class="eq">
+R<sub>CC</sub>(K, T) = [S<sub>2T</sub> &minus; max(S<sub>1T</sub> &minus; K, 0)] / [S<sub>20</sub> &minus; C<sub>0</sub>(K, T)] &minus; 1, &nbsp; (eq 4)<br>
+R<sub>PP</sub>(K, T) = [S<sub>2T</sub> + max(K &minus; S<sub>1T</sub>, 0)] / [S<sub>20</sub> + P<sub>0</sub>(K, T)] &minus; 1. &nbsp; (eq 5)
+</div>
+<p><strong>cc</strong> and <strong>pp</strong> set S<sub>1T</sub> = S<sub>2T</sub> (same underlying); <strong>cc2</strong> and <strong>pp2</strong> use the cross-asset pair. Hence cc / pp are copula-invariant (they depend only on the stock 1 marginal), while cc2 / pp2 isolate the dependence structure.</p>
+
+<h2>16. Exercise 4 Module Documentation</h2>
+
+<h3>16.1 <code>black_scholes.py</code></h3>
+<p><code>bs_call_put(S0, r, sigma, T, K)</code> returns European call and put prices; K may be a scalar or array so the entire strike grid is priced in one call.</p>
+
+<h3>16.2 <code>copulas.py</code></h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>gaussian_shocks(n, rho, rng)</code></td><td>Direct Cholesky recombination (no uniform round-trip).</td></tr>
+<tr><td><code>t_shocks(n, rho, nu, rng)</code></td><td>Uses <code>sim_student_t</code>, then Phi<sup>&minus;1</sup>.</td></tr>
+<tr><td><code>clayton_shocks(n, theta, rng)</code></td><td>Uses <code>sim_clayton</code>, then Phi<sup>&minus;1</sup>.</td></tr>
+<tr><td><code>sample_shocks(kind, n, rng, **params)</code></td><td>Dispatcher used by <code>main.py</code>.</td></tr>
+</table>
+
+<h3>16.3 <code>option_portfolio.py</code></h3>
+<p><code>portfolio_returns_over_strikes(S1T, S2T, K_grid, S0, r, sigma, T)</code> broadcasts the (N,) path vectors against the (NK,) strike grid to produce four (N, NK) return matrices in one shot, plus the C<sub>0</sub>, P<sub>0</sub> vectors.</p>
+
+<h3>16.4 <code>stats.py</code></h3>
+<p><code>strike_stats(R)</code> computes column-wise mean, std, skewness and kurtosis with the MATLAB convention (biased estimators; kurtosis is the <em>non-excess</em> coefficient, so Normal = 3).</p>
+
+<h3>16.5 <code>plotting.py</code></h3>
+<p>Produces a 4-panel figure (mean, volatility, skewness, kurtosis) vs K per scenario. Line styles match the slides: cc dashed blue, cc2 solid blue, pp dashed red, pp2 solid red.</p>
+
+<h3>16.6 <code>main.py</code></h3>
+<p>Runs the four scenarios and saves <code>fig_4_4_1_gaussian_high.png</code>, <code>fig_4_4_2_gaussian_low.png</code>, <code>fig_4_4_3_student_t.png</code>, <code>fig_4_4_4_clayton.png</code>. Also prints an ATM (K = 100) summary table per scenario.</p>
+
+<h2>17. Configuration — Exercise 4 block</h2>
+<table>
+<tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>N</code></td><td>100000</td><td>Monte-Carlo paths (per scenario)</td></tr>
+<tr><td><code>strike_grid</code></td><td>85 &rarr; 115 step 1</td><td>31 strikes, matches MATLAB linspace</td></tr>
+<tr><td><code>gbm.S0 / r / mu / sigma / T</code></td><td>100, 0.03, 0.08, 0.2, 1</td><td>Slide parameters (both assets)</td></tr>
+<tr><td><code>part_4_1.rho</code></td><td>0.9</td><td>Gaussian copula, baseline (slide graphs)</td></tr>
+<tr><td><code>part_4_2.rho</code></td><td>0.3</td><td>Weakened Gaussian dependence</td></tr>
+<tr><td><code>part_4_3</code></td><td>rho=0.3, nu=5</td><td>t copula (adds tail dependence)</td></tr>
+<tr><td><code>part_4_4.theta</code></td><td>10</td><td>Clayton (strong lower-tail dependence)</td></tr>
+<tr><td><code>seeds</code></td><td>41–44</td><td>Per-scenario <code>np.random.default_rng</code> seeds</td></tr>
+</table>
+
+<h2>18. Exercise 4 Scenarios</h2>
+
+<h3>18.1 Part 4.1 — Gaussian copula (rho = 0.9)</h3>
+<p>Reproduces the reference graphs on slides 16–19. Because cc and pp use only stock 1, their curves are copula-invariant and serve as benchmarks in every scenario. cc2 and pp2 display strong co-movement with cc and pp, respectively, consistent with a near-perfectly dependent system.</p>
+
+<h3>18.2 Part 4.2 — Gaussian copula (rho = 0.3)</h3>
+<p>Weak linear dependence: the cross-asset option leg no longer tracks the held asset closely, so cc2 and pp2 volatility roughly doubles relative to 4.1 (ATM std 0.26 vs 0.13). Skewness of cc2 and pp2 moves toward zero as the two assets decouple.</p>
+
+<h3>18.3 Part 4.3 — Student t copula (rho = 0.3, nu = 5)</h3>
+<p>Same linear correlation as 4.2 but with heavier joint tails. The ATM cc2 kurtosis rises from 3.77 (Gaussian) to 4.32 (t), and pp2 kurtosis from 3.72 to 4.11 — a direct signature of tail dependence in the cross-asset statistics while cc and pp are unchanged.</p>
+
+<h3>18.4 Part 4.4 — Clayton copula (theta = 10)</h3>
+<p>Strong lower-tail dependence with near-perfect co-movement in down markets. cc2 volatility collapses back to the level of 4.1 (ATM std 0.14), but cc2 kurtosis is elevated (~7.0), and pp2 skewness is closer to pp (both move together sharply in the down tail). A clean visual demonstration that linear correlation alone cannot distinguish these dependence regimes.</p>
+
+<h2>19. Usage</h2>
+<pre>
+cd PS2
+python -m exercise4.main
 </pre>
 
 </body>

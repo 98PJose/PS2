@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.0] - 2026-04-14
+
+### Added
+- `exercise4/black_scholes.py`: `bs_call_put` — closed-form European call/put prices (port of the course routine `BS.m`). Vectorised over the strike grid.
+- `exercise4/copulas.py`: Bivariate shock generators producing (Z_1, Z_2) with N(0,1) marginals under Gaussian / Student t / Clayton copulas. Gaussian uses the direct Cholesky recombination (matches `ccK_simuRet2.m`); t and Clayton reuse `exercise1.copula_sim` and apply Phi^{-1} to the dependent uniforms.
+- `exercise4/option_portfolio.py`: `cc_return`, `pp_return` (eqs 4–5 from the Option-based portfolios slides) and `portfolio_returns_over_strikes` which broadcasts to yield (N, NK) return matrices for cc / cc2 / pp / pp2 in one call.
+- `exercise4/stats.py`: Column-wise mean, std, skew, kurtosis over the strike grid with MATLAB defaults (biased estimators, non-excess kurtosis so Normal = 3).
+- `exercise4/plotting.py`: 4-panel figure per scenario with slide-matching line styles (cc dashed blue, cc2 solid blue, pp dashed red, pp2 solid red).
+- `exercise4/main.py`: Orchestrator running 4.1–4.4 and saving `fig_4_4_1_gaussian_high.png`, `fig_4_4_2_gaussian_low.png`, `fig_4_4_3_student_t.png`, `fig_4_4_4_clayton.png`. Prints an ATM (K = 100) summary table per scenario.
+- `config.json`: Added `exercise4` block with N = 100_000, strike grid 85–115 step 1, GBM parameters (S0 = 100, r = 0.03, mu = 0.08, sigma = 0.2, T = 1), per-part copula parameters (rho = 0.9 / 0.3, (rho, nu) = (0.3, 5), theta = 10) and per-scenario RNG seeds.
+- `readme.html`: Added Exercise 4 documentation (sections 14–19) plus an Exercise 1 section header. Project-structure tree reordered to put `exercise3/` and `exercise4/` after `exercise2/`.
+
 ## [3.0.0] - 2026-04-14
 
 ### Added

@@ -12,7 +12,11 @@
       "Bash(powershell -Command \"\\(Get-Item 'C:/Users/PJ/Desktop/Modeling Risk/Copula_slides.pdf'\\).Length\")",
       "Bash(python -c \"from pypdf import PdfReader; r=PdfReader\\('C:/Users/PJ/Desktop/Modeling Risk/Copula_slides.pdf'\\); print\\(len\\(r.pages\\)\\)\")",
       "Bash(python -c \"import PyPDF2; r=PyPDF2.PdfReader\\('C:/Users/PJ/Desktop/Modeling Risk/Copula_slides.pdf'\\); print\\(len\\(r.pages\\)\\)\")",
-      "Bash(python -m exercise3.main)"
+      "Bash(python -m exercise3.main)",
+      "Bash(cd /tmp)",
+      "Bash(cp \"C:/Users/PJ/Desktop/Modeling Risk/BS.m\" BS.zip)",
+      "Bash(unzip -o BS.zip)",
+      "Bash(python -m exercise4.main)"
     ]
   }
 }
