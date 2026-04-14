@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0] - 2026-04-14
+
+### Added
+- `exercise2/data.py`: Loads crypto.xlsx, extracts BTC/ETH/ADA daily returns (T=1827, 2020-01-02 to 2025-01-01).
+- `exercise2/descriptive.py`: Computes mean, std, skewness, kurtosis (regular), and sample Pearson correlation matrix.
+- `exercise2/garch.py`: GARCH(1,1) and GJR(1,1) MLE estimation from scratch with zero mean, Normal innovations. Uses L-BFGS-B optimizer with parameter bounds. Full mathematical derivations in docstrings.
+- `exercise2/dcc.py`: DCC model implementation with Q_t dynamics (eq 69), normalization to Psi_t (eq 68). Gaussian copula LL (eq 72) and Student t copula LL (eq 76). Estimation via Nelder-Mead. Returns time-varying pairwise correlation series.
+- `exercise2/plotting.py`: Dynamic correlation time series plots (3-panel) and multi-model comparison overlay plot.
+- `exercise2/main.py`: Orchestrator for parts 2.1–2.4.
+- `config.json`: Added `exercise2` section with data path, asset names, GARCH and DCC optimizer settings.
+- `requirements.txt`: Added `pandas>=2.0` and `openpyxl>=3.1` dependencies.
+- `readme.html`: Added full Exercise 2 documentation (sections 6–8).
+
 ## [1.0.1] - 2026-04-14
 
 ### Fixed

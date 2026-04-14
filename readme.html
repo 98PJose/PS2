@@ -175,5 +175,126 @@ print(result["rho"])  # estimated correlation
 <strong>Note on mixture simulation:</strong> For each draw, a Bernoulli(0.6) random variable selects whether to draw from Clayton or Survival Clayton. Both components are evaluated on the same independent uniforms; the indicator selects which output to keep.
 </div>
 
+<hr>
+
+<h1 id="exercise2">Exercise 2 — DCC Copula Models on Crypto Returns</h1>
+
+<h2>6. Exercise 2 Project Structure</h2>
+<pre>
+exercise2/
+├── __init__.py
+├── data.py           # Load crypto.xlsx, extract BTC/ETH/ADA returns
+├── descriptive.py    # Descriptive statistics and correlation matrix
+├── garch.py          # GARCH(1,1) and GJR(1,1) MLE estimation
+├── dcc.py            # DCC model: Q_t dynamics, Gaussian and t copula LL
+├── plotting.py       # Dynamic correlation plots and comparison plots
+└── main.py           # Orchestrator for 2.1–2.4
+</pre>
+
+<h2>7. Exercise 2 Module Documentation</h2>
+
+<h3>7.1 <code>data.py</code> — Data Loading</h3>
+<p>Reads <code>crypto.xlsx</code> which contains daily prices and returns for BTC, ETH, and ADA from 2020-01-01 to 2025-01-01. The spreadsheet has a two-row header; returns are in columns 5–7, starting at row index 2. The first observation (NaN) is dropped, yielding T=1827 returns.</p>
+
+<h3>7.2 <code>descriptive.py</code> — Descriptive Statistics (2.1)</h3>
+<p>Computes mean, standard deviation, skewness, kurtosis (regular, Normal=3), and the sample Pearson correlation matrix for all return series.</p>
+
+<h3>7.3 <code>garch.py</code> — GARCH and GJR Estimation (2.2b, 2.2c)</h3>
+<p>Estimates univariate volatility models by maximum likelihood with zero mean and Normal innovations.</p>
+
+<div class="eq">
+<strong>GARCH(1,1)</strong> (eq 67):<br>
+h<sub>t</sub> = &omega; + &alpha; r<sup>2</sup><sub>t-1</sub> + &beta; h<sub>t-1</sub><br><br>
+Constraints: &omega; &gt; 0, &alpha; &ge; 0, &beta; &ge; 0, &alpha; + &beta; &lt; 1.<br>
+Unconditional variance: &sigma;<sup>2</sup> = &omega; / (1 - &alpha; - &beta;).<br><br>
+Log-likelihood: LL = -&frac12; &Sigma;<sub>t</sub> [ln(h<sub>t</sub>) + r<sub>t</sub><sup>2</sup>/h<sub>t</sub>]
+</div>
+
+<div class="eq">
+<strong>GJR(1,1)</strong> (eq 71):<br>
+h<sub>t</sub> = &omega; + (&alpha; + &gamma; D<sub>t-1</sub>) r<sup>2</sup><sub>t-1</sub> + &beta; h<sub>t-1</sub><br><br>
+where D<sub>t-1</sub> = 1 if r<sub>t-1</sub> &lt; 0 (leverage indicator).<br>
+Constraints: &omega; &gt; 0, &alpha; &ge; 0, &beta; &ge; 0, &gamma; &ge; 0, &alpha; + &beta; + &gamma;/2 &lt; 1.<br><br>
+The &gamma; parameter captures the asymmetric leverage effect: negative shocks increase volatility more than positive shocks of equal magnitude.
+</div>
+
+<table>
+<tr><th>Function</th><th>Description</th><th>Optimizer</th></tr>
+<tr><td><code>estimate_garch(r)</code></td><td>GARCH(1,1) MLE, returns &omega;, &alpha;, &beta;, h<sub>t</sub>, z<sub>t</sub></td><td>L-BFGS-B</td></tr>
+<tr><td><code>estimate_gjr(r)</code></td><td>GJR(1,1) MLE, returns &omega;, &alpha;, &beta;, &gamma;, h<sub>t</sub>, z<sub>t</sub></td><td>L-BFGS-B</td></tr>
+</table>
+
+<p><strong>Example:</strong></p>
+<pre>
+from exercise2.garch import estimate_garch
+result = estimate_garch(returns["BTC"].values)
+print(result["alpha"], result["beta"])  # GARCH params
+z = result["z"]  # standardized residuals z_t = r_t / sqrt(h_t)
+</pre>
+
+<h3>7.4 <code>dcc.py</code> — DCC Model (2.2–2.4)</h3>
+<p>Implements the Dynamic Conditional Correlation model under both Gaussian and Student t copulas.</p>
+
+<div class="eq">
+<strong>DCC dynamics</strong> (eq 69):<br>
+Q<sub>t</sub> = (1 - a - b) &Omega;&#770; + a z<sub>t-1</sub> z'<sub>t-1</sub> + b Q<sub>t-1</sub><br><br>
+where &Omega;&#770; is the sample correlation of z<sub>t</sub>, and Q<sub>1</sub> = &Omega;&#770;.<br><br>
+<strong>Normalization</strong> (eq 68):<br>
+&Psi;<sub>t</sub> = &Lambda;<sub>t</sub><sup>-1/2</sup> Q<sub>t</sub> &Lambda;<sub>t</sub><sup>-1/2</sup><br>
+where &Lambda;<sub>t</sub> = diag(q<sub>11,t</sub>, ..., q<sub>nn,t</sub>).<br>
+This ensures &Psi;<sub>t</sub> is a valid correlation matrix with unit diagonal.
+</div>
+
+<div class="eq">
+<strong>Gaussian copula DCC log-likelihood</strong> (eq 72):<br>
+LL<sub>G</sub> = -&frac12; &Sigma;<sub>t</sub> [ln|&Psi;<sub>t</sub>| + &eta;'<sub>t</sub> (&Psi;<sub>t</sub><sup>-1</sup> - I<sub>n</sub>) &eta;<sub>t</sub>]
+</div>
+
+<div class="eq">
+<strong>Student t copula DCC log-likelihood</strong> (eq 76):<br>
+LL<sub>t</sub> = T/2 ln A(v) - &frac12; &Sigma;<sub>t</sub> ln|&Psi;<sub>t</sub>|
+- (v+n)/2 &Sigma;<sub>t</sub> ln[1 + v<sup>-1</sup> &eta;'<sub>t</sub> &Psi;<sub>t</sub><sup>-1</sup> &eta;<sub>t</sub>]
++ (v+1)/2 &Sigma;<sub>t</sub> &Sigma;<sub>i</sub> ln[1 + v<sup>-1</sup> &eta;<sup>2</sup><sub>it</sub>]<br><br>
+where A(v) = &Gamma;((v+n)/2) &Gamma;(v/2)<sup>n-1</sup> / &Gamma;((v+1)/2)<sup>n</sup>.
+</div>
+
+<table>
+<tr><th>Function</th><th>Description</th><th>Parameters estimated</th></tr>
+<tr><td><code>estimate_dcc_gaussian(z)</code></td><td>Gaussian copula DCC</td><td>a, b</td></tr>
+<tr><td><code>estimate_dcc_t(u)</code></td><td>Student t copula DCC</td><td>a, b, &nu;</td></tr>
+</table>
+
+<h3>7.5 <code>plotting.py</code> — Dynamic Correlation Plots</h3>
+<table>
+<tr><th>Function</th><th>Output</th></tr>
+<tr><td><code>plot_dynamic_correlations(...)</code></td><td>3-panel time series of pairwise &rho;<sub>t</sub></td></tr>
+<tr><td><code>plot_correlation_comparison(...)</code></td><td>Overlay of EDF/GARCH/GJR dynamic correlations</td></tr>
+</table>
+
+<h2>8. Exercise 2 Scenarios</h2>
+
+<h3>8.1 Part 2.1 — Descriptive Statistics</h3>
+<p>Reports mean, std, skewness, kurtosis for BTC, ETH, ADA daily returns, plus the 3&times;3 sample correlation matrix. All three series show excess kurtosis (leptokurtic) and negative skewness (especially BTC).</p>
+
+<h3>8.2 Part 2.2 — DCC Estimation under Three Marginal Models</h3>
+<p>The IFM method estimates the DCC in two steps:</p>
+<ol>
+<li><strong>Step I — Marginals:</strong>
+    <ul>
+    <li><strong>2.2a (EDF):</strong> u<sub>it</sub> = rank(r<sub>it</sub>)/(T+1), then z<sub>it</sub> = &Phi;<sup>-1</sup>(u<sub>it</sub>). This is a static, nonparametric transformation that does not capture time-varying volatility.</li>
+    <li><strong>2.2b (GARCH-N):</strong> Estimate GARCH(1,1) per series, then z<sub>it</sub> = r<sub>it</sub>/&radic;h<sub>it</sub>. Captures volatility clustering.</li>
+    <li><strong>2.2c (GJR-N):</strong> Same as GARCH but with leverage term. Captures asymmetric volatility response.</li>
+    </ul>
+</li>
+<li><strong>Step II — DCC:</strong> Estimate (a, b) by maximizing the Gaussian copula log-likelihood given the standardized residuals from Step I.</li>
+</ol>
+
+<div class="note">
+<strong>Key observation from 2.3:</strong> The EDF-based DCC produces smoother dynamic correlations because the EDF is a static transformation that cannot capture time-varying volatility clustering. The GARCH and GJR models produce more volatile correlation paths because the standardized residuals z<sub>t</sub> = r<sub>t</sub>/&radic;h<sub>t</sub> remove conditional heteroscedasticity, allowing the DCC to isolate pure correlation dynamics. GARCH and GJR results are similar, with GJR showing slightly different patterns due to the leverage effect.
+</div>
+
+<h3>8.3 Part 2.4 — DCC under Student t Copula</h3>
+<p>Estimates (a, b, &nu;) under the t copula with EDF marginals. The t copula accounts for tail dependence via the degrees-of-freedom parameter &nu;. Lower &nu; implies heavier joint tails. The t copula LL should be at least as high as the Gaussian copula LL (the Gaussian is the limiting case &nu; &rarr; &infin;).</p>
+
 </body>
 </html>
