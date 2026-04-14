@@ -1,0 +1,57 @@
+{
+    "simulation": {
+        "Ns": 100000,
+        "seed_main": 42,
+        "seed_mixture": 123,
+        "eps": 1e-10
+    },
+    "copulas": {
+        "clayton": { "theta": 10 },
+        "survival_clayton": { "theta": 5 },
+        "gaussian": { "rho": -0.7 },
+        "student_t": { "rho": -0.7, "nu": 5 },
+        "fgm_neg": { "lambda": -0.5 },
+        "fgm_zero": { "lambda": 0.0 }
+    },
+    "marginals": {
+        "stock1": { "distribution": "norm", "params": { "loc": 0, "scale": 1 } },
+        "stock2": { "distribution": "t", "params": { "df": 6 } }
+    },
+    "marginals_1d": {
+        "stock1": { "distribution": "norm", "params": { "loc": 0, "scale": 1 } },
+        "stock2": { "distribution": "norm", "params": { "loc": 0, "scale": 1 } }
+    },
+    "portfolio": {
+        "weights": [0.4, 0.6],
+        "var_levels": [0.01, 0.05]
+    },
+    "mixture": {
+        "prob_clayton": 0.6,
+        "clayton_theta": 10,
+        "surv_clayton_theta": 5
+    },
+    "estimation": {
+        "edf_method": "rank_over_T_plus_1",
+        "gaussian_bounds": [-0.9999, 0.9999],
+        "t_copula_x0": [0.5, 5.0],
+        "t_copula_maxiter": 10000
+    },
+    "output": {
+        "figures_dir": "figures",
+        "dpi": 150
+    },
+
+    "exercise2": {
+        "data_path": "../crypto.xlsx",
+        "asset_names": ["BTC", "ETH", "ADA"],
+        "garch": {
+            "mean": 0,
+            "maxiter": 5000
+        },
+        "dcc": {
+            "x0_ab": [0.02, 0.95],
+            "x0_ab_nu": [0.02, 0.95, 8.0],
+            "maxiter": 10000
+        }
+    }
+}

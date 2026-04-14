@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip list:*)",
+      "Bash(python exercise1.py)",
+      "Bash(ls -la \"C:/Users/PJ/Desktop/Modeling Risk/PS2/\"*.png)",
+      "Bash(python -m exercise1.main)",
+      "Read(//c/Users/PJ/Desktop/Modeling Risk/**)",
+      "Bash(python -c ':*)",
+      "Bash(pip install:*)",
+      "Bash(python -m exercise2.main)"
+    ]
+  }
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercise 1 — Copula Models | Modeling Risk PS2</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 960px; margin: 40px auto; line-height: 1.6; color: #333; padding: 0 20px; }
+        h1 { border-bottom: 2px solid #2c3e50; padding-bottom: 10px; }
+        h2 { color: #2c3e50; margin-top: 30px; }
+        h3 { color: #34495e; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 0.9em; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+        th { background: #2c3e50; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .eq { background: #eef; padding: 10px; border-left: 3px solid #36c; margin: 10px 0; font-family: 'Cambria Math', serif; }
+        .note { background: #fff3cd; border-left: 3px solid #ffc107; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<h1>Exercise 1 — Copula Models</h1>
+<p><strong>Course:</strong> Modeling Risk &mdash; Problem Set 2026<br>
+<strong>Language:</strong> Python 3.10+<br>
+<strong>Last updated:</strong> 2026-04-14</p>
+
+<h2>1. Project Structure</h2>
+<pre>
+PS2/
+├── config.json              # All tunable parameters (no hardcoding)
+├── requirements.txt         # pip install -r requirements.txt
+├── readme.html              # This file
+├── changelog.md             # Version history
+├── exercise1/
+│   ├── __init__.py
+│   ├── copula_sim.py        # Copula simulation (Clayton, SurvClayton, Gaussian, t, FGM)
+│   ├── copula_likelihood.py # Log-likelihood functions (Gaussian and t copulas)
+│   ├── estimation.py        # EDF + IFM/CML estimation routines
+│   ├── portfolio.py         # Portfolio return construction and statistics
+│   ├── plotting.py          # Figure generation
+│   └── main.py              # Orchestrator: runs 1.a–1.d
+└── figures/                 # Output directory for generated plots
+</pre>
+
+<h2>2. Installation &amp; Usage</h2>
+<pre>
+pip install -r requirements.txt
+cd PS2
+python -m exercise1.main
+</pre>
+<p>All parameters are read from <code>config.json</code>. To change copula parameters, portfolio weights, number of simulations, seeds, etc., edit that file.</p>
+
+<h2>3. Module Documentation</h2>
+
+<h3>3.1 <code>copula_sim.py</code> — Copula Simulation</h3>
+<p>Contains one function per copula type. All use the <strong>conditional (inverse CDF) method</strong>: given independent V<sub>1</sub>, V<sub>2</sub> ~ U(0,1), set u<sub>2</sub> = v<sub>2</sub> and solve v<sub>1</sub> = C(u<sub>1</sub> | u<sub>2</sub>) for u<sub>1</sub>.</p>
+
+<table>
+<tr><th>Function</th><th>Copula</th><th>Key equation</th></tr>
+<tr><td><code>sim_clayton(v1, v2, theta)</code></td><td>Clayton</td><td>eq 45: u<sub>1</sub> = [1 + u<sub>2</sub><sup>-θ</sup> (v<sub>1</sub><sup>-θ/(1+θ)</sup> - 1)]<sup>-1/θ</sup></td></tr>
+<tr><td><code>sim_surv_clayton(v1, v2, theta)</code></td><td>Survival Clayton</td><td>eq 51: u<sub>1</sub> = 1 - [(v̄<sub>1</sub> v̄<sub>2</sub><sup>1+θ</sup>)<sup>-θ/(1+θ)</sup> - v̄<sub>2</sub><sup>-θ</sup> + 1]<sup>-1/θ</sup></td></tr>
+<tr><td><code>sim_gaussian(v1, v2, rho)</code></td><td>Gaussian</td><td>eq 34: u<sub>1</sub> = Φ(ρ Φ<sup>-1</sup>(v<sub>2</sub>) + √(1-ρ²) Φ<sup>-1</sup>(v<sub>1</sub>))</td></tr>
+<tr><td><code>sim_student_t(v1, v2, rho, nu)</code></td><td>Student t</td><td>eq 41: y<sub>1</sub> = ρy<sub>2</sub> + t<sub>ν+1</sub><sup>-1</sup>(v<sub>1</sub>)√[(1-ρ²)(ν+y<sub>2</sub>²)/(ν+1)]</td></tr>
+<tr><td><code>sim_fgm(v1, v2, lam)</code></td><td>FGM</td><td>eq 53: u<sub>1</sub> = [(1+ψ) - √((1+ψ)² - 4v<sub>1</sub>ψ)] / (2ψ), ψ = λ(1-2v<sub>2</sub>)</td></tr>
+<tr><td><code>sim_mixture(...)</code></td><td>Mixture of two copulas</td><td>Bernoulli selection per draw</td></tr>
+</table>
+
+<p><strong>Example:</strong></p>
+<pre>
+import numpy as np
+from exercise1.copula_sim import sim_gaussian
+
+np.random.seed(42)
+v1, v2 = np.random.rand(10000), np.random.rand(10000)
+u1, u2 = sim_gaussian(v1, v2, rho=-0.7)
+# u1, u2 are now dependent U(0,1) with Gaussian copula structure
+</pre>
+
+<h3>3.2 <code>copula_likelihood.py</code> — Log-Likelihoods</h3>
+<p>Provides the log-likelihood of the copula density for each observation, summed over the sample.</p>
+
+<div class="eq">
+<strong>Gaussian copula LL</strong> (eq 31):<br>
+ln c<sup>G</sup> = -½ ln(1-ρ²) - [ρ²(x₁²+x₂²) - 2ρx₁x₂] / [2(1-ρ²)]<br>
+where x<sub>i</sub> = Φ<sup>-1</sup>(u<sub>i</sub>).
+</div>
+
+<div class="eq">
+<strong>Student t copula LL</strong> (eq 38):<br>
+ln c<sup>t</sup> = ln Γ((ν+2)/2) + ln Γ(ν/2) - 2 ln Γ((ν+1)/2) - ½ ln(1-ρ²)
+- (ν+2)/2 · ln(1 + Q/[ν(1-ρ²)]) + (ν+1)/2 · [ln(1+y₁²/ν) + ln(1+y₂²/ν)]<br>
+where Q = y₁² - 2ρy₁y₂ + y₂² and y<sub>i</sub> = t<sub>ν</sub><sup>-1</sup>(u<sub>i</sub>).
+</div>
+
+<h3>3.3 <code>estimation.py</code> — EDF &amp; IFM Estimation</h3>
+
+<p><strong>EDF (Empirical Distribution Function):</strong> Uses the Weibull plotting position F̂(x<sub>(k)</sub>) = k / (T+1), avoiding boundary values 0 and 1.</p>
+
+<p><strong>IFM method</strong> (Joe, 1997) in two steps:</p>
+<ol>
+<li><strong>Step I:</strong> Estimate marginals via EDF → pseudo-observations û<sub>i</sub>.</li>
+<li><strong>Step II:</strong> Maximize copula log-likelihood given û<sub>i</sub> to estimate copula parameters.</li>
+</ol>
+<p>When EDF is used for Step I, this is also called the <strong>CML (Canonical Maximum Likelihood)</strong> method (slide 84).</p>
+
+<table>
+<tr><th>Function</th><th>Description</th><th>Optimizer</th></tr>
+<tr><td><code>edf(x)</code></td><td>Empirical CDF: rank/(T+1)</td><td>—</td></tr>
+<tr><td><code>estimate_gaussian_copula(u1, u2)</code></td><td>Estimate ρ for Gaussian copula</td><td>Brent (bounded)</td></tr>
+<tr><td><code>estimate_t_copula(u1, u2)</code></td><td>Estimate (ρ, ν) for t copula</td><td>Nelder-Mead</td></tr>
+</table>
+
+<p><strong>Example:</strong></p>
+<pre>
+from exercise1.estimation import edf, estimate_gaussian_copula
+
+# Given return observations r1, r2
+u1_hat = edf(r1)
+u2_hat = edf(r2)
+result = estimate_gaussian_copula(u1_hat, u2_hat)
+print(result["rho"])  # estimated correlation
+</pre>
+
+<h3>3.4 <code>portfolio.py</code> — Portfolio Analysis</h3>
+<p>Transforms copula draws to asset returns via the <strong>inversion method</strong> (r<sub>i</sub> = F<sub>i</sub><sup>-1</sup>(u<sub>i</sub>)), constructs a weighted portfolio, and computes descriptive statistics.</p>
+
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>get_marginal_ppf(spec)</code></td><td>Returns inverse CDF from a config spec (supports 'norm' and 't')</td></tr>
+<tr><td><code>compute_portfolio_returns(u1, u2, m1, m2, w)</code></td><td>Returns (r_p, r1, r2)</td></tr>
+<tr><td><code>compute_stats(rp, var_levels)</code></td><td>Mean, std, skewness, kurtosis (regular, Normal=3), VaR at given levels</td></tr>
+</table>
+
+<h3>3.5 <code>plotting.py</code> — Figure Generation</h3>
+<table>
+<tr><th>Function</th><th>Output</th></tr>
+<tr><td><code>plot_copula_scatter(draws_dict, ...)</code></td><td><code>fig_1a_scatter.png</code> — 2×3 scatter plots of U(0,1) draws</td></tr>
+<tr><td><code>plot_portfolio_histograms(returns_dict, ...)</code></td><td><code>fig_1b_histograms.png</code> — 2×3 histograms with Normal overlay</td></tr>
+<tr><td><code>plot_mixture_scatter(u1, u2, ...)</code></td><td><code>fig_1d_mixture.png</code> — single scatter plot of mixture copula</td></tr>
+</table>
+
+<h3>3.6 <code>main.py</code> — Orchestrator</h3>
+<p>Loads <code>config.json</code>, builds the copula registry, and calls <code>run_1a()</code>, <code>run_1b()</code>, <code>run_1c()</code>, <code>run_1d()</code> in sequence. Each function prints results to console and saves figures.</p>
+
+<h2>4. Configuration</h2>
+<p>All parameters live in <code>config.json</code>. Key sections:</p>
+<table>
+<tr><th>Section</th><th>Parameters</th></tr>
+<tr><td><code>simulation</code></td><td>Ns (number of draws), seeds, eps (clipping)</td></tr>
+<tr><td><code>copulas</code></td><td>θ, ρ, ν, λ for each of the 6 copula models</td></tr>
+<tr><td><code>marginals</code></td><td>Distribution spec for 1.b (stock1: N(0,1), stock2: t(6))</td></tr>
+<tr><td><code>marginals_1d</code></td><td>Distribution spec for 1.d (both N(0,1))</td></tr>
+<tr><td><code>portfolio</code></td><td>Weights [0.4, 0.6], VaR levels [0.01, 0.05]</td></tr>
+<tr><td><code>mixture</code></td><td>Mixture probability and component θ values</td></tr>
+<tr><td><code>estimation</code></td><td>EDF method, optimizer bounds and settings</td></tr>
+<tr><td><code>output</code></td><td>Figures directory, DPI</td></tr>
+</table>
+
+<h2>5. Exercise Scenarios</h2>
+
+<h3>5.1 Part 1.a — Copula Simulation &amp; Dependence</h3>
+<p>Generates 100,000 bivariate dependent U(0,1) draws for 6 copulas. Produces scatter plots showing different dependence structures (lower-tail, upper-tail, elliptical, weak, independence). Reports Pearson's ρ, Spearman's ρ<sub>S</sub>, and Kendall's τ.</p>
+
+<h3>5.2 Part 1.b — Portfolio Analysis</h3>
+<p>Transforms copula draws to returns (R<sub>1</sub> ~ N(0,1), R<sub>2</sub> ~ t(6)) and constructs portfolio r<sub>p</sub> = 0.4·r<sub>1</sub> + 0.6·r<sub>2</sub>. Reports mean, std, skewness, kurtosis, VaR(1%), VaR(5%). Produces histograms with Normal PDF overlay to highlight tail differences. Reports the 6×6 correlation matrix of portfolio returns across copula models.</p>
+
+<h3>5.3 Part 1.c — IFM Estimation of Gaussian Copula</h3>
+<p>Uses simulated returns from the Gaussian copula (ρ = -0.7) as "observed data". Estimates marginals via EDF, then maximizes Gaussian copula LL to recover ρ. Validates that the estimated ρ is close to the true value.</p>
+
+<h3>5.4 Part 1.d — Mixture Copula + t Copula Estimation</h3>
+<p>Simulates from a mixture copula: 0.6·Clayton(10) + 0.4·SurvClayton(5). Both marginals are N(0,1). Estimates a t copula via IFM+EDF, recovering (ρ, ν). Also estimates a Gaussian copula for comparison. The t copula should achieve a higher LL due to its ability to capture tail dependence via low ν.</p>
+
+<div class="note">
+<strong>Note on mixture simulation:</strong> For each draw, a Bernoulli(0.6) random variable selects whether to draw from Clayton or Survival Clayton. Both components are evaluated on the same independent uniforms; the indicator selects which output to keep.
+</div>
+
+</body>
+</html>
