@@ -1,0 +1,242 @@
+% =====================================================================
+\section{Exercise 1 -- Bivariate copula simulation, dependence, and IFM/CML}
+\label{sec:ex1}
+% =====================================================================
+
+We work with six bivariate copulas (\textsc{Clayton} $\theta=10$, \textsc{Survival
+Clayton} $\theta=5$, \textsc{Gaussian} $\rho=-0.7$, \textsc{Student-$t$}
+$\rho=-0.7,\nu=5$, \textsc{FGM} $\lambda=-0.5$ and \textsc{FGM} $\lambda=0$).
+The implementation lives in \file{exercise1/} and is driven by
+\file{exercise1/main.py}. Throughout, $V_1,V_2$ denote independent
+$\mathcal{U}(0,1)$ draws used as the source of randomness, while $(U_1,U_2)$
+is the resulting copula sample.
+
+% ---------------------------------------------------------------
+\subsection{Theoretical building block: the conditional distribution method}
+% ---------------------------------------------------------------
+
+Given a bivariate copula $C$, define the partial derivative
+\[
+C_2(u_1\given u_2)\;=\;\Pr(U_1\le u_1\mid U_2=u_2)\;=\;\frac{\partial}{\partial u_2}\,C(u_1,u_2).
+\]
+By construction $C_2(\cdot\given u_2)$ is a CDF on $(0,1)$. The
+\emph{conditional inversion algorithm} produces a sample from $C$ in two steps:
+\[
+\boxed{\;U_2\sim\mathcal{U}(0,1),\qquad U_1\;=\;C_2^{-1}(V_1\given U_2),\quad V_1\sim\mathcal{U}(0,1).\;}
+\]
+This is exactly what every routine in \file{exercise1/copula\_sim.py} implements.
+
+% ---------------------------------------------------------------
+\subsection{Closed-form simulators}
+% ---------------------------------------------------------------
+
+\paragraph{Clayton ($\theta>0$).}
+$C^{Cla}(u_1,u_2)=\bigl(u_1^{-\theta}+u_2^{-\theta}-1\bigr)^{-1/\theta}$.
+Differentiating in $u_2$,
+\[
+C_2(u_1\given u_2)=u_2^{-\theta-1}\bigl(u_1^{-\theta}+u_2^{-\theta}-1\bigr)^{-1-1/\theta}.
+\]
+Setting $C_2=v_1$ and solving for $u_1$ yields
+\begin{equation}\label{eq:clayton-sim}
+U_1=\Bigl[\,1+u_2^{-\theta}\bigl(v_1^{-\theta/(\theta+1)}-1\bigr)\Bigr]^{-1/\theta}.
+\end{equation}
+
+\paragraph{Survival Clayton.} The survival copula
+$\hat C(u_1,u_2)=u_1+u_2-1+C(1-u_1,1-u_2)$ is sampled by drawing
+$(\tilde U_1,\tilde U_2)$ from Clayton and setting
+$U_i=1-\tilde U_i$, which produces the upper-tail counterpart of the Clayton
+clustering.
+
+\paragraph{Gaussian ($-1<\rho<1$).}
+With $X_i=\Phi^{-1}(U_i)$,
+\[
+X_1\given X_2=x_2\;\sim\;\mathcal{N}\!\bigl(\rho x_2,\;1-\rho^2\bigr),
+\]
+so the conditional CDF is $C^G(u_1\given u_2)=
+\Phi\!\bigl((\Phi^{-1}u_1-\rho\,\Phi^{-1}u_2)/\sqrt{1-\rho^2}\bigr)$
+and the inverse gives
+\begin{equation}\label{eq:gauss-sim}
+U_1=\Phi\!\bigl(\rho\,\Phi^{-1}(u_2)+\sqrt{1-\rho^2}\,\Phi^{-1}(v_1)\bigr).
+\end{equation}
+
+\paragraph{Student $t$ ($\rho,\nu$).} Letting $y_i=t_\nu^{-1}(u_i)$,
+\[
+\frac{\,Y_1-\rho Y_2\,}{\sqrt{(1-\rho^2)(\nu+Y_2^2)/(\nu+1)}}\;\sim\;t_{\nu+1},
+\]
+which inverts to
+\begin{equation}\label{eq:t-sim}
+U_1=t_\nu\!\Bigl(\rho\, Y_2+t_{\nu+1}^{-1}(v_1)\sqrt{(1-\rho^2)(\nu+Y_2^2)/(\nu+1)}\Bigr).
+\end{equation}
+
+\paragraph{FGM ($-1\le\lambda\le 1$).}
+$C^{FGM}(u_1,u_2)=u_1u_2[1+\lambda(1-u_1)(1-u_2)]$. Setting
+$\psi=\lambda(1-2u_2)$, the equation $C_2(u_1\given u_2)=v_1$ becomes
+$\psi u_1^2-(1+\psi)u_1+v_1=0$, with the admissible root
+\begin{equation}\label{eq:fgm-sim}
+U_1=\frac{(1+\psi)-\sqrt{(1+\psi)^2-4\psi v_1}}{2\psi}\,.
+\end{equation}
+At $\lambda=0$ we have independence and $U_1=v_1$ is recovered as the limit.
+The Python implementation guards against $\psi\to 0$ via a \code{safe\_psi}
+mask (\file{copula\_sim.py}).
+
+\paragraph{Mixture (used in 1.d).} A copula mixture
+$C=\pi C_A+(1-\pi)C_B$ is sampled by drawing a Bernoulli($\pi$) indicator
+and selecting $C_A$ or $C_B$ component-wise.
+
+% ---------------------------------------------------------------
+\subsection{1.a -- Scatter plots and dependence measures}
+% ---------------------------------------------------------------
+
+For each copula we draw $N=10^5$ pairs and compute the three classical
+dependence measures: Pearson's $\rho$, Spearman's $\rho_S$ and Kendall's $\tau$.
+Pearson is sensitive to the marginals, while Spearman and Kendall are
+\emph{copula-only} invariants.
+Numerical results (Table~\ref{tab:1a}) and scatter plots
+(Figure~\ref{fig:1a}) show:
+\begin{itemize}\setlength\itemsep{0pt}
+\item Clayton concentrates mass in the south-west corner (lower-tail dependence).
+\item Survival Clayton concentrates mass in the north-east corner (upper-tail dependence).
+\item Gaussian and Student-$t$ at $\rho=-0.7$ produce the elliptical anti-diagonal pattern;
+      $t$ adds heavier joint extremes.
+\item FGM is essentially close to independence: its dependence parameter
+      is bounded ($|\tau|\le 2/9$).
+\end{itemize}
+
+\begin{table}[H]\centering\small
+\caption{Dependence measures, $N=10^5$ draws.}\label{tab:1a}
+\begin{tabular}{lrrr}
+\toprule
+Copula & Pearson & Spearman & Kendall\\\midrule
+Clayton $\theta=10$            & $0.9584$ & $0.9583$ & $0.8335$\\
+Survival Clayton $\theta=5$    & $0.8844$ & $0.8847$ & $0.7141$\\
+Gaussian $\rho=-0.7$           & $-0.6840$ & $-0.6839$ & $-0.4947$\\
+Student-$t$ $\rho=-0.7,\nu=5$  & $-0.6723$ & $-0.6722$ & $-0.4948$\\
+FGM $\lambda=-0.5$             & $-0.1706$ & $-0.1706$ & $-0.1139$\\
+FGM $\lambda=0$                & $-0.0044$ & $-0.0044$ & $-0.0029$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_1a_scatter.png}
+\caption{Dependent $\mathcal{U}(0,1)$ scatter plots, $N=10^5$.}\label{fig:1a}
+\end{figure}
+
+\paragraph{Sanity check on Kendall's $\tau$.} For Clayton,
+$\tau=\theta/(\theta+2)=10/12=0.8333$, matching the simulated $0.8335$. For
+Gaussian/$t$, $\tau=(2/\pi)\arcsin\rho=-0.4936$, matching $-0.4947$ and $-0.4948$.
+This is a strong validation of the simulator.
+
+% ---------------------------------------------------------------
+\subsection{1.b -- Portfolio statistics, VaR, and correlation across copulas}
+% ---------------------------------------------------------------
+
+We build the portfolio $r_p=0.4\,r_1+0.6\,r_2$ where
+$r_1=\Phi^{-1}(U_1)\sim\mathcal{N}(0,1)$ and
+$r_2=t_6^{-1}(U_2)\sim t_6$. The marginals enter only through their quantile
+functions; the copula governs the joint behaviour. Statistics are reported
+in Table~\ref{tab:1b}, and a direct comparison of histograms vs.\ a Normal
+overlay (same $\mu,\sigma$) is shown in Figure~\ref{fig:1b}.
+
+\begin{table}[H]\centering\small
+\caption{Portfolio statistics for $r_p=0.4r_1+0.6r_2$, $r_1\!\sim\!\mathcal{N}(0,1)$,
+$r_2\!\sim\!t_6$.}\label{tab:1b}
+\begin{tabular}{lrrrrrr}
+\toprule
+Copula & Mean & Std & Skew & Kurt & VaR$_{1\%}$ & VaR$_{5\%}$\\\midrule
+Clayton           & $0.0007$ & $1.1116$ & $-0.1683$ & $4.1135$ & $-2.7795$ & $-1.8168$\\
+Surv. Clayton     & $0.0012$ & $1.0915$ & $\phantom{-}0.2290$ & $4.0641$ & $-2.4421$ & $-1.6886$\\
+Gaussian          & $0.0007$ & $0.5394$ & $-0.0197$ & $6.6978$ & $-1.3527$ & $-0.8432$\\
+Student-$t$       & $0.0008$ & $0.5399$ & $\phantom{-}0.0029$ & $6.8199$ & $-1.3815$ & $-0.8472$\\
+FGM $\lambda=-0.5$ & $0.0010$ & $0.7786$ & $-0.0039$ & $5.1494$ & $-1.9349$ & $-1.2390$\\
+FGM $\lambda=0$    & $0.0011$ & $0.8342$ & $-0.0023$ & $4.7379$ & $-2.0458$ & $-1.3340$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_1b_histograms.png}
+\caption{Portfolio return histograms with Normal($\mu,\sigma^2$) overlay.}\label{fig:1b}
+\end{figure}
+
+\paragraph{Reading the table.}
+The variance of $r_p$ is
+\[
+\Var(r_p)=w_1^2\Var(r_1)+w_2^2\Var(r_2)+2w_1w_2\Cov(r_1,r_2),
+\]
+so a positive copula increases $\Var(r_p)$ relative to a negatively dependent
+one (compare Clayton vs.\ Gaussian). VaR at level $\alpha$ is the empirical
+$\alpha$-quantile $\widehat{\mathrm{VaR}}_\alpha=\hat F_{r_p}^{-1}(\alpha)$, computed
+in \code{exercise1.portfolio.compute\_stats} with \code{numpy.quantile}.
+Negative dependence (Gaussian $\rho=-0.7$) drastically reduces $\sigma_p$ and
+hence the magnitude of VaR, as expected from diversification.
+
+% ---------------------------------------------------------------
+\subsection{1.c -- Estimating a Gaussian copula by IFM with EDF margins}
+% ---------------------------------------------------------------
+
+Given an i.i.d. sample $\{(r_{1t},r_{2t})\}_{t=1}^T$ the Inference-Functions-for-Margins
+(IFM) estimator proceeds in two steps:
+\begin{enumerate}\setlength\itemsep{0pt}
+\item Estimate each marginal $\hat F_i$ separately;
+\item Estimate the copula parameter by maximising the copula log-likelihood
+      evaluated at $\hat u_{it}=\hat F_i(r_{it})$.
+\end{enumerate}
+When $\hat F_i$ is the empirical CDF $\hat F_i(x)=\frac{1}{T+1}\sum_t \indic\{r_{it}\le x\}$
+(``EDF'' margin) we obtain the \emph{Canonical Maximum Likelihood} (CML) variant.
+The shift from $T$ to $T+1$ avoids exact 0/1 values that would blow up
+$\Phi^{-1}(\hat u)$.
+
+\paragraph{Gaussian copula log-likelihood (slides eq.\,31).}
+Let $\eta_t=(\Phi^{-1}\hat u_{1t},\Phi^{-1}\hat u_{2t})^\top$ and
+$\Psi=\bigl(\begin{smallmatrix}1&\rho\\\rho&1\end{smallmatrix}\bigr)$. Then
+\begin{align}
+\ln c^G(\hat u_{1t},\hat u_{2t};\rho)
+&=-\tfrac12\ln(1-\rho^2)
+ -\tfrac12\,\eta_t^\top(\Psi^{-1}-I)\eta_t\notag\\
+&=-\tfrac12\ln(1-\rho^2)-\frac{\rho^2(\eta_{1t}^2+\eta_{2t}^2)-2\rho\eta_{1t}\eta_{2t}}{2(1-\rho^2)}.
+\label{eq:gauss-cop-ll}
+\end{align}
+We maximise $\sum_t \ln c^G$ in $\rho$ by Brent's method on $(-0.999,0.999)$
+(\code{exercise1.estimation.estimate\_gaussian\_copula}).
+
+\paragraph{Result.} On the Gaussian-copula sample with true $\rho=-0.7$ we obtain
+$\hat\rho=-0.702095$, $\ln L=33{,}949.36$, with successful convergence. The
+estimator recovers the truth to three decimals on $10^5$ observations.
+
+% ---------------------------------------------------------------
+\subsection{1.d -- Mixture DGP and t-copula IFM estimation}
+% ---------------------------------------------------------------
+
+We now generate $N=10^5$ pairs from the mixture
+\[
+C=0.6\;C^{Cla}_{\theta=10}+0.4\;\hat C^{Cla}_{\theta=5},
+\]
+which produces strong dependence in both tails (Figure~\ref{fig:1d}). The
+sample dependence measures are Pearson $0.9283$, Spearman $0.9282$, Kendall $0.7750$.
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.65\linewidth]{fig_1d_mixture.png}
+\caption{Mixture $0.6\,C^{Cla}_{10}+0.4\,\hat C^{Cla}_{5}$ scatter ($N=10^5$).}
+\label{fig:1d}
+\end{figure}
+
+\paragraph{Student-$t$ copula log-likelihood (slides eq.\,38).}
+Let $y_{it}=t_\nu^{-1}(\hat u_{it})$ and
+$Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
+\begin{align}
+\ln c^t(\hat u_{1t},\hat u_{2t};\rho,\nu)
+&=\ln\Gamma(\tfrac{\nu+2}{2})+\ln\Gamma(\tfrac{\nu}{2})
+   -2\ln\Gamma(\tfrac{\nu+1}{2})-\tfrac12\ln(1-\rho^2)\notag\\
+&\quad-\tfrac{\nu+2}{2}\,\ln\!\Bigl(1+\tfrac{Q_t}{\nu(1-\rho^2)}\Bigr)
++\tfrac{\nu+1}{2}\sum_{i=1}^{2}\ln\!\Bigl(1+\tfrac{y_{it}^2}{\nu}\Bigr).
+\label{eq:t-cop-ll}
+\end{align}
+\code{exercise1.estimation.estimate\_t\_copula} maximises this by Nelder--Mead.
+
+\paragraph{Result.} The fitted t-copula returns $\hat\rho=0.929316$, $\hat\nu=2.1698$,
+$\ln L=96{,}886.07$. The very small $\hat\nu$ is the t-copula's only way to
+mimic the heavy joint tails of the Clayton mixture --- a Gaussian fit on the
+same data gives $\hat\rho=0.9057$ and $\ln L=85{,}791$, more than $11{,}000$
+log-likelihood points behind. This is a textbook example of how IFM correctly
+identifies tail dependence by inflating the t-copula degrees of freedom downward.

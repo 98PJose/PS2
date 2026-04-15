@@ -20,7 +20,10 @@
       "Bash(python -m exercise5.main)",
       "Bash(tee /tmp/ex5_run.log)",
       "Bash(ps -W)",
-      "Bash(tasklist //FI \"IMAGENAME eq python.exe\")"
+      "Bash(tasklist //FI \"IMAGENAME eq python.exe\")",
+      "Bash(pdflatex -interaction=nonstopmode -halt-on-error main.tex)",
+      "Bash(python main.py --skip-exercises)",
+      "Bash(python main.py --only 3 --skip-latex)"
     ]
   }
 }

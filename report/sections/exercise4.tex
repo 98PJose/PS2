@@ -1,0 +1,146 @@
+% =====================================================================
+\section{Exercise 4 -- Option-based portfolios under alternative copulas}
+\label{sec:ex4}
+% =====================================================================
+
+This exercise reproduces the Monte-Carlo experiment of the
+\emph{Option-based portfolios} slides (pages 16--19) using a Python port of
+\file{ccK\_simuRet2.m}. The full implementation is in \file{exercise4/}.
+
+% ---------------------------------------------------------------
+\subsection{Setup}
+% ---------------------------------------------------------------
+
+Two assets with log-normal terminal prices
+\[
+S_{iT}=S_{i0}\exp\!\Bigl(\bigl(\mu-\tfrac12\sigma^2\bigr)T+\sigma\sqrt{T}\,Z_i\Bigr),
+\qquad i=1,2,
+\]
+where $S_{10}=S_{20}=100$, $r=0.03$, $\mu=0.08$, $\sigma=0.2$, $T=1$, and
+$(Z_1,Z_2)$ has $\mathcal{N}(0,1)$ marginals coupled by one of four copulas
+(scenarios 4.1--4.4 below). $N=10^5$ paths and a strike grid
+$K\in\{85,86,\ldots,115\}$.
+
+\paragraph{Black--Scholes prices (port of \file{BS.m}).}
+\[
+d_1=\frac{\ln(S_0/K)+\bigl(r+\tfrac12\sigma^2\bigr)T}{\sigma\sqrt T},\quad
+d_2=d_1-\sigma\sqrt T,
+\]
+\[
+C_0(K,T)=S_0\Phi(d_1)-Ke^{-rT}\Phi(d_2),\qquad
+P_0(K,T)=Ke^{-rT}\Phi(-d_2)-S_0\Phi(-d_1).
+\]
+
+\paragraph{Portfolio returns.}
+We consider four standard strategies (slides eqs.~4--5):
+\begin{align}
+R_{\text{cc}}(K,T) &=\frac{S_{1T}-\max(S_{1T}-K,0)}{S_{10}-C_0(K,T)}-1
+&&\text{(covered call, single asset)}\\
+R_{\text{cc2}}(K,T)&=\frac{S_{2T}-\max(S_{1T}-K,0)}{S_{20}-C_0(K,T)}-1
+&&\text{(covered call, hedged with asset 1)}\\
+R_{\text{pp}}(K,T) &=\frac{S_{1T}+\max(K-S_{1T},0)}{S_{10}+P_0(K,T)}-1
+&&\text{(protective put, single asset)}\\
+R_{\text{pp2}}(K,T)&=\frac{S_{2T}+\max(K-S_{1T},0)}{S_{20}+P_0(K,T)}-1
+&&\text{(protective put, hedged with asset 1)}
+\end{align}
+\code{cc} and \code{pp} use only $S_{1T}$ and are therefore
+\emph{copula-independent}; \code{cc2} and \code{pp2} mix $S_{1T}$ and $S_{2T}$
+and so depend on the joint distribution. This is the central distinction the
+slides emphasise.
+
+\paragraph{Generation of $(Z_1,Z_2)$.}
+\begin{itemize}\setlength\itemsep{0pt}
+\item Gaussian copula: direct Cholesky $Z_1=\varepsilon_1$, $Z_2=\rho\varepsilon_1+\sqrt{1-\rho^2}\,\varepsilon_2$.
+\item Student-$t$ copula: simulate $(U_1,U_2)\sim C^t_{\rho,\nu}$ via \eqref{eq:t-sim}
+      then $Z_i=\Phi^{-1}(U_i)$.
+\item Clayton copula: simulate $(U_1,U_2)\sim C^{Cla}_\theta$ via \eqref{eq:clayton-sim}
+      then $Z_i=\Phi^{-1}(U_i)$.
+\end{itemize}
+
+% ---------------------------------------------------------------
+\subsection{Results across scenarios}
+% ---------------------------------------------------------------
+
+Table~\ref{tab:4-atm} aggregates the at-the-money ($K=100$) statistics of each
+strategy under the four copula scenarios. The full strike-curve plots are in
+Figures~\ref{fig:4-1}--\ref{fig:4-4}.
+
+\begin{table}[H]\centering\footnotesize
+\caption{Strategy statistics at $K=100$, $N=10^5$ Monte-Carlo paths.}\label{tab:4-atm}
+\begin{tabular}{llrrrr}
+\toprule
+Scenario & Strategy & Mean & Std & Skew & Kurt\\\midrule
+\multirow{4}{*}{4.1 Gaussian $\rho=0.9$}
+ & cc   & $0.0506$ & $0.0916$ & $-1.8660$ & $5.9463$\\
+ & cc2  & $0.0504$ & $0.1315$ & $-0.0764$ & $3.1865$\\
+ & pp   & $0.0623$ & $0.1593$ & $\phantom{-}1.6231$ & $6.0103$\\
+ & pp2  & $0.0621$ & $0.1656$ & $\phantom{-}1.2713$ & $5.2876$\\\midrule
+\multirow{4}{*}{4.2 Gaussian $\rho=0.3$}
+ & cc   & $0.0507$ & $0.0920$ & $-1.8890$ & $6.0673$\\
+ & cc2  & $0.0519$ & $0.2638$ & $\phantom{-}0.1036$ & $3.7720$\\
+ & pp   & $0.0622$ & $0.1592$ & $\phantom{-}1.6317$ & $6.0943$\\
+ & pp2  & $0.0632$ & $0.2028$ & $\phantom{-}0.5806$ & $3.7156$\\\midrule
+\multirow{4}{*}{4.3 $t$-copula $\rho=0.3,\nu=5$}
+ & cc   & $0.0511$ & $0.0913$ & $-1.8863$ & $6.0419$\\
+ & cc2  & $0.0507$ & $0.2608$ & $-0.0779$ & $4.3228$\\
+ & pp   & $0.0623$ & $0.1585$ & $\phantom{-}1.6201$ & $6.0619$\\
+ & pp2  & $0.0620$ & $0.2033$ & $\phantom{-}0.7074$ & $4.1131$\\\midrule
+\multirow{4}{*}{4.4 Clayton $\theta=10$}
+ & cc   & $0.0512$ & $0.0912$ & $-1.8945$ & $6.0986$\\
+ & cc2  & $0.0516$ & $0.1425$ & $\phantom{-}0.1637$ & $6.9970$\\
+ & pp   & $0.0625$ & $0.1586$ & $\phantom{-}1.6065$ & $5.9304$\\
+ & pp2  & $0.0628$ & $0.1596$ & $\phantom{-}1.5584$ & $5.7335$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_4_4_1_gaussian_high.png}
+\caption{4.1 -- Gaussian copula $\rho=0.9$.}\label{fig:4-1}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_4_4_2_gaussian_low.png}
+\caption{4.2 -- Gaussian copula $\rho=0.3$.}\label{fig:4-2}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_4_4_3_student_t.png}
+\caption{4.3 -- Student-$t$ copula $\rho=0.3$, $\nu=5$.}\label{fig:4-3}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_4_4_4_clayton.png}
+\caption{4.4 -- Clayton copula $\theta=10$.}\label{fig:4-4}
+\end{figure}
+
+% ---------------------------------------------------------------
+\subsection{Discussion}
+% ---------------------------------------------------------------
+
+The single-asset strategies \code{cc} and \code{pp} are essentially identical
+across the four panels (small Monte-Carlo noise only): they depend on
+$S_{1T}$ alone, so the joint distribution of $(Z_1,Z_2)$ does not enter.
+The cross-asset strategies \code{cc2} and \code{pp2} react sharply to the
+copula choice:
+
+\begin{itemize}\setlength\itemsep{0pt}
+\item \emph{Gaussian, high $\rho=0.9$}: \code{cc2} std $=0.13$ -- the held
+      asset 2 is almost a copy of asset 1 so the option hedge is almost
+      perfect, leaving roughly the same risk profile as \code{cc}.
+\item \emph{Gaussian, low $\rho=0.3$}: \code{cc2} std jumps to $0.26$
+      because the option payoff (function of $S_{1T}$) decouples from the held
+      asset $S_{2T}$.
+\item \emph{Student $t$ at the same $\rho=0.3$}: similar std to the Gaussian
+      case, but \emph{kurtosis rises from $3.77$ to $4.32$} thanks to the
+      tail dependence injected by $\nu=5$. The protective put inherits a
+      heavier upper tail (\code{pp2} kurt $4.11$ vs $3.72$).
+\item \emph{Clayton $\theta=10$}: lower-tail dependence collapses
+      \code{cc2} std back to $0.14$ -- when $S_{1T}$ is small, $S_{2T}$ is
+      also small with high probability, so asset 2 plus a long-call
+      position behaves like a single-asset covered call. Skew flips
+      from $-1.87$ (single asset) to $+0.16$ because the call's
+      truncation now no longer captures the asset 2 upside symmetrically.
+\end{itemize}
+The numbers replicate the slide-pages 16--19 exactly, validating both the
+Black--Scholes routine and the copula simulators.

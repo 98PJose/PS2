@@ -1,0 +1,229 @@
+% =====================================================================
+\section{Exercise 2 -- DCC dynamics on cryptocurrency returns}\label{sec:ex2}
+% =====================================================================
+
+We work with the daily log-returns of three large-cap crypto assets
+(BTC, ETH, ADA) loaded from \file{crypto.xlsx}. The sample spans
+$T=1827$ trading days from 2 January 2020 to 1 January 2025. The whole pipeline
+is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
+
+% ---------------------------------------------------------------
+\subsection{2.1 -- Univariate descriptives and sample correlations}
+% ---------------------------------------------------------------
+
+\begin{table}[H]\centering\small
+\caption{Daily log-return descriptives. Skewness uses $b_1$,
+kurtosis is the \emph{regular} (non-excess) version.}\label{tab:21-desc}
+\begin{tabular}{lrrrr}
+\toprule
+Asset & Mean & Std & Skew & Kurt\\\midrule
+BTC & $0.001404$ & $0.034701$ & $-1.6580$ & $29.3539$\\
+ETH & $0.001780$ & $0.044965$ & $-1.3830$ & $23.2127$\\
+ADA & $0.001777$ & $0.052556$ & $-0.2361$ & $11.7605$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Sample correlation matrix.}
+$\rho_{\textsc{btc-eth}}=0.8355$,\quad
+$\rho_{\textsc{btc-ada}}=0.6928$,\quad
+$\rho_{\textsc{eth-ada}}=0.7353$.
+
+The three series exhibit textbook crypto stylised facts: near-zero mean,
+markedly negative skew (especially BTC and ETH), and a pronounced excess
+kurtosis (Pearson kurtosis $\gg 3$). High pair-wise correlations justify a
+\emph{joint} dependence model.
+
+% ---------------------------------------------------------------
+\subsection{Theoretical framework: GARCH/GJR + DCC}
+% ---------------------------------------------------------------
+
+\paragraph{Marginal volatility -- GARCH(1,1) (slides eq.\,67).}
+For a zero-mean return $r_t$,
+\begin{equation}\label{eq:garch}
+r_t=\sqrt{h_t}\,z_t,\qquad
+h_t=\omega+\alpha r_{t-1}^{2}+\beta\,h_{t-1},\qquad z_t\sim\mathcal{N}(0,1)\ \text{i.i.d.}
+\end{equation}
+Conditions: $\omega>0$, $\alpha,\beta\ge 0$, persistence $\alpha+\beta<1$. The
+Gaussian (quasi-) MLE log-likelihood is
+\[
+\ell(\theta)=-\tfrac12\sum_{t=1}^T\Bigl[\ln(2\pi)+\ln h_t+\frac{r_t^2}{h_t}\Bigr],
+\qquad h_1\equiv\widehat{\sigma}_r^{\,2}.
+\]
+We optimise by L-BFGS-B in \code{exercise2.garch.estimate\_garch}.
+
+\paragraph{Marginal volatility with leverage -- GJR(1,1) (slides eq.\,71).}
+\begin{equation}\label{eq:gjr}
+h_t=\omega+\bigl(\alpha+\gamma\,\indic\{r_{t-1}<0\}\bigr)r_{t-1}^{2}+\beta\,h_{t-1},
+\end{equation}
+with persistence $\alpha+\beta+\gamma/2<1$ (because $\Pr(r<0)\approx 1/2$ under
+symmetric innovations). $\gamma>0$ captures the leverage effect.
+
+\paragraph{From margins to standardised innovations.}
+Let $\hat\eta_{it}$ denote the standardised residual of asset $i$ at time $t$:
+\[
+\hat\eta_{it}=
+\begin{cases}
+\Phi^{-1}\!\bigl(\hat F_{i}^{\text{EDF}}(r_{it})\bigr)& \text{(EDF margin, 2.2a)}\\[2pt]
+r_{it}/\sqrt{\hat h_{it}}, & \text{(GARCH/GJR margin, 2.2b--c)}.
+\end{cases}
+\]
+
+\paragraph{DCC dynamics (Engle, 2002 -- slides eqs.\,68--69).}
+With $z_t=\hat\eta_t$ (an $n\times 1$ vector of standardised innovations) we
+posit
+\begin{align}
+Q_t &=(1-a-b)\,\hat\Omega+a\,z_{t-1}z_{t-1}^\top+b\,Q_{t-1},\quad Q_1=\hat\Omega,\label{eq:dcc-Q}\\
+\Psi_t &=\Lambda_t^{-1/2}\,Q_t\,\Lambda_t^{-1/2},\qquad \Lambda_t=\diag(Q_t),\label{eq:dcc-psi}
+\end{align}
+where $\hat\Omega=\frac{1}{T}\sum_t z_tz_t^\top$ and $a,b>0$, $a+b<1$. The
+normalisation in \eqref{eq:dcc-psi} ensures $\Psi_t$ is a correlation matrix
+(unit diagonal).
+
+\paragraph{Gaussian DCC log-likelihood (slides eq.\,72).}
+The copula likelihood (margins concentrated out) is
+\begin{equation}\label{eq:dcc-LL-G}
+\ell^G(a,b)=-\tfrac12\sum_{t=1}^{T}\Bigl[\ln|\Psi_t|+\eta_t^\top(\Psi_t^{-1}-I_n)\eta_t\Bigr].
+\end{equation}
+
+\paragraph{Student-$t$ DCC log-likelihood (slides eq.\,76).}
+With $A(\nu)=\dfrac{\Gamma\!\bigl(\tfrac{\nu+n}{2}\bigr)\,\Gamma\!\bigl(\tfrac{\nu}{2}\bigr)^{n-1}}
+{\Gamma\!\bigl(\tfrac{\nu+1}{2}\bigr)^{n}}$,
+\begin{align}
+\ell^t(a,b,\nu)
+&=T\ln A(\nu)-\tfrac12\sum_{t}\ln|\Psi_t|
+   -\tfrac{\nu+n}{2}\sum_t\ln\!\Bigl(1+\tfrac{1}{\nu}\eta_t^\top\Psi_t^{-1}\eta_t\Bigr)\notag\\
+&\quad+\tfrac{\nu+1}{2}\sum_t\sum_{i=1}^n\ln\!\Bigl(1+\tfrac{\eta_{it}^2}{\nu}\Bigr),
+\label{eq:dcc-LL-t}
+\end{align}
+with $\eta_{it}=t_\nu^{-1}(\hat u_{it})$ obtained from the EDF margins. Both
+likelihoods are maximised by Nelder--Mead in \code{exercise2.dcc}.
+
+% ---------------------------------------------------------------
+\subsection{2.2 -- DCC under three marginal specifications}
+% ---------------------------------------------------------------
+
+\paragraph{(a) EDF margins.} $\hat a=0.012308$, $\hat b=0.987592$, $\hat a+\hat
+b=0.999900$, $\ln L=1954.19$, with unconditional correlations
+$\hat\Omega_{\textsc{btc-eth}}=0.8248$, $\hat\Omega_{\textsc{btc-ada}}=0.7039$,
+$\hat\Omega_{\textsc{eth-ada}}=0.7418$. The persistence is essentially 1 --- a
+typical IGARCH-style finding driven by the strong persistence of the EDF
+ranks themselves. See Figure~\ref{fig:22a}.
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.85\linewidth]{fig_2_2a_dcc_edf.png}
+\caption{Dynamic correlations under DCC-Gaussian with EDF margins.}\label{fig:22a}
+\end{figure}
+
+\paragraph{(b) GARCH(1,1)-N margins.} The marginal estimates are reported in
+Table~\ref{tab:22b-margins}. The DCC stage gives $\hat a=0.060304$,
+$\hat b=0.900190$, $\hat a+\hat b=0.960494$, $\ln L=1964.18$.
+
+\begin{table}[H]\centering\small
+\caption{GARCH(1,1)-N marginal estimates.}\label{tab:22b-margins}
+\begin{tabular}{lrrrrr}
+\toprule
+Asset & $\omega$ & $\alpha$ & $\beta$ & $\alpha+\beta$ & $\ln L$\\\midrule
+BTC & $4.88\times 10^{-5}$ & $0.1146$ & $0.8595$ & $0.9741$ & $5324.93$\\
+ETH & $3.95\times 10^{-5}$ & $0.1030$ & $0.8850$ & $0.9880$ & $4943.94$\\
+ADA & $1.11\times 10^{-4}$ & $0.1365$ & $0.8336$ & $0.9701$ & $4633.55$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.85\linewidth]{fig_2_2b_dcc_garch.png}
+\caption{DCC dynamic correlations with GARCH(1,1)-N margins.}\label{fig:22b}
+\end{figure}
+
+\paragraph{(c) GJR(1,1)-N margins.}
+Table~\ref{tab:22c-margins}. DCC parameters: $\hat a=0.062861$, $\hat b=0.902904$,
+$\hat a+\hat b=0.965765$, $\ln L=1934.41$.
+
+\begin{table}[H]\centering\small
+\caption{GJR(1,1)-N marginal estimates. $\gamma$ is the leverage coefficient.}
+\label{tab:22c-margins}
+\begin{tabular}{lrrrrr}
+\toprule
+Asset & $\alpha$ & $\beta$ & $\gamma$ & Persistence & $\ln L$\\\midrule
+BTC & $0.0713$ & $0.8426$ & $0.0996$ & $0.9637$ & $5340.71$\\
+ETH & $0.0852$ & $0.8776$ & $0.0457$ & $0.9857$ & $4946.55$\\
+ADA & $0.1288$ & $0.8280$ & $0.0265$ & $0.9701$ & $4634.15$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.85\linewidth]{fig_2_2c_dcc_gjr.png}
+\caption{DCC dynamic correlations with GJR(1,1)-N margins.}\label{fig:22c}
+\end{figure}
+
+% ---------------------------------------------------------------
+\subsection{2.3 -- Comparison of dynamic correlation paths}
+% ---------------------------------------------------------------
+
+Figure~\ref{fig:23} overlays the three pair-wise correlation paths for the
+three marginal specifications. Table~\ref{tab:23-summary} summarises the
+sample distribution of each path.
+
+\begin{table}[H]\centering\small
+\caption{Distribution of estimated dynamic correlations across $T=1827$ days.}
+\label{tab:23-summary}
+\begin{tabular}{llrrrr}
+\toprule
+Pair & Margin & Mean & Std & Min & Max\\\midrule
+\multirow{3}{*}{BTC--ETH}
+ & EDF      & $0.8333$ & $0.0538$ & $0.6857$ & $0.9248$\\
+ & GARCH-N  & $0.8200$ & $0.0700$ & $0.5129$ & $0.9746$\\
+ & GJR-N    & $0.8148$ & $0.0751$ & $0.4887$ & $0.9731$\\\midrule
+\multirow{3}{*}{BTC--ADA}
+ & EDF      & $0.7187$ & $0.0917$ & $0.4114$ & $0.8697$\\
+ & GARCH-N  & $0.7012$ & $0.1051$ & $0.1564$ & $0.9751$\\
+ & GJR-N    & $0.6962$ & $0.1132$ & $0.1207$ & $0.9761$\\\midrule
+\multirow{3}{*}{ETH--ADA}
+ & EDF      & $0.7511$ & $0.0779$ & $0.4928$ & $0.8839$\\
+ & GARCH-N  & $0.7410$ & $0.0977$ & $0.3218$ & $0.9706$\\
+ & GJR-N    & $0.7388$ & $0.1042$ & $0.2796$ & $0.9692$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_2_3_comparison.png}
+\caption{Pair-wise dynamic correlations under EDF, GARCH-N, and GJR-N margins.}
+\label{fig:23}
+\end{figure}
+
+\paragraph{Reading the comparison.}
+The three series share the same qualitative pattern --- correlations rise
+during the COVID-19 shock (March 2020), the May 2021 sell-off, the FTX
+collapse (Nov 2022), and the late-2023 risk-on rally. Quantitatively, EDF
+margins produce the smoothest path (the rank transformation truncates extreme
+co-movements), while GARCH/GJR margins capture sharper short-run drops in
+dependence. The $\hat a+\hat b$ estimate falls from $0.9999$ (EDF) to $\approx
+0.96$ once the marginal variance is filtered, which is the standard outcome
+when margins absorb most of the persistence.
+
+% ---------------------------------------------------------------
+\subsection{2.4 -- DCC under a Student-$t$ copula (EDF margins)}
+% ---------------------------------------------------------------
+
+We now jointly estimate $(a,b,\nu)$ in \eqref{eq:dcc-LL-t}. The estimates are
+$\hat a=0.039216$, $\hat b=0.937845$, $\hat\nu=4.3936$, $\ln L=2093.03$. The
+LL gain over the Gaussian-EDF specification is $2093.03-1954.19=138.84$,
+overwhelming evidence that the joint tail of the three crypto returns is
+heavier than Gaussian and well captured by a $t$-copula with around four
+degrees of freedom. Figure~\ref{fig:24} reports the dynamic correlations.
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.85\linewidth]{fig_2_4_dcc_t.png}
+\caption{Dynamic correlations under DCC-$t$ copula with EDF margins
+($\hat\nu=4.39$).}\label{fig:24}
+\end{figure}
+
+\paragraph{Intuition for $\hat\nu\approx 4.4$.}
+A finite $\nu$ is the device by which the Student-$t$ copula introduces
+\emph{tail dependence} (absent in the Gaussian copula). With three crypto
+assets sharing common shocks during stress periods, $\hat\nu$ is pushed
+toward small values; values in the 4--6 range are typical of equity
+indices, and the crypto evidence here lies just at the lower end of that range.

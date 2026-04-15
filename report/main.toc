@@ -1,0 +1,61 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction and notation}{2}{section.1}%
+\contentsline {paragraph}{Project layout.}{2}{section*.2}%
+\contentsline {paragraph}{Reproducibility.}{2}{section*.3}%
+\contentsline {section}{\numberline {2}Exercise 1 -- Bivariate copula simulation, dependence, and IFM/CML}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Theoretical building block: the conditional distribution method}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Closed-form simulators}{3}{subsection.2.2}%
+\contentsline {paragraph}{Clayton ($\theta >0$).}{3}{section*.4}%
+\contentsline {paragraph}{Survival Clayton.}{3}{section*.5}%
+\contentsline {paragraph}{Gaussian ($-1<\rho <1$).}{3}{section*.6}%
+\contentsline {paragraph}{Student $t$ ($\rho ,\nu $).}{3}{section*.7}%
+\contentsline {paragraph}{FGM ($-1\le \lambda \le 1$).}{4}{section*.8}%
+\contentsline {paragraph}{Mixture (used in 1.d).}{4}{section*.9}%
+\contentsline {subsection}{\numberline {2.3}1.a -- Scatter plots and dependence measures}{4}{subsection.2.3}%
+\contentsline {paragraph}{Sanity check on Kendall's $\tau $.}{5}{section*.12}%
+\contentsline {subsection}{\numberline {2.4}1.b -- Portfolio statistics, VaR, and correlation across copulas}{5}{subsection.2.4}%
+\contentsline {paragraph}{Reading the table.}{6}{section*.15}%
+\contentsline {subsection}{\numberline {2.5}1.c -- Estimating a Gaussian copula by IFM with EDF margins}{6}{subsection.2.5}%
+\contentsline {paragraph}{Gaussian copula log-likelihood (slides eq.\,31).}{6}{section*.16}%
+\contentsline {paragraph}{Result.}{7}{section*.17}%
+\contentsline {subsection}{\numberline {2.6}1.d -- Mixture DGP and t-copula IFM estimation}{7}{subsection.2.6}%
+\contentsline {paragraph}{Student-$t$ copula log-likelihood (slides eq.\,38).}{7}{section*.19}%
+\contentsline {paragraph}{Result.}{7}{section*.20}%
+\contentsline {section}{\numberline {3}Exercise 2 -- DCC dynamics on cryptocurrency returns}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}2.1 -- Univariate descriptives and sample correlations}{8}{subsection.3.1}%
+\contentsline {paragraph}{Sample correlation matrix.}{8}{section*.22}%
+\contentsline {subsection}{\numberline {3.2}Theoretical framework: GARCH/GJR + DCC}{8}{subsection.3.2}%
+\contentsline {paragraph}{Marginal volatility -- GARCH(1,1) (slides eq.\,67).}{8}{section*.23}%
+\contentsline {paragraph}{Marginal volatility with leverage -- GJR(1,1) (slides eq.\,71).}{8}{section*.24}%
+\contentsline {paragraph}{From margins to standardised innovations.}{8}{section*.25}%
+\contentsline {paragraph}{DCC dynamics (Engle, 2002 -- slides eqs.\,68--69).}{8}{section*.26}%
+\contentsline {paragraph}{Gaussian DCC log-likelihood (slides eq.\,72).}{9}{section*.27}%
+\contentsline {paragraph}{Student-$t$ DCC log-likelihood (slides eq.\,76).}{9}{section*.28}%
+\contentsline {subsection}{\numberline {3.3}2.2 -- DCC under three marginal specifications}{9}{subsection.3.3}%
+\contentsline {paragraph}{(a) EDF margins.}{9}{section*.29}%
+\contentsline {paragraph}{(b) GARCH(1,1)-N margins.}{10}{section*.31}%
+\contentsline {paragraph}{(c) GJR(1,1)-N margins.}{10}{section*.34}%
+\contentsline {subsection}{\numberline {3.4}2.3 -- Comparison of dynamic correlation paths}{11}{subsection.3.4}%
+\contentsline {paragraph}{Reading the comparison.}{12}{section*.39}%
+\contentsline {subsection}{\numberline {3.5}2.4 -- DCC under a Student-$t$ copula (EDF margins)}{12}{subsection.3.5}%
+\contentsline {paragraph}{Intuition for $\hat \nu \approx 4.4$.}{13}{section*.41}%
+\contentsline {section}{\numberline {4}Exercise 3 -- Conditional quantile curves of the NM copula}{13}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Specification}{13}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Definition of $q$-quantile curves}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Numerical results}{14}{subsection.4.3}%
+\contentsline {paragraph}{Intuition.}{14}{section*.44}%
+\contentsline {section}{\numberline {5}Exercise 4 -- Option-based portfolios under alternative copulas}{15}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Setup}{15}{subsection.5.1}%
+\contentsline {paragraph}{Black--Scholes prices (port of \texttt {\small \textcolor {blue!55!black}{BS.m}}).}{15}{section*.45}%
+\contentsline {paragraph}{Portfolio returns.}{15}{section*.46}%
+\contentsline {paragraph}{Generation of $(Z_1,Z_2)$.}{15}{section*.47}%
+\contentsline {subsection}{\numberline {5.2}Results across scenarios}{15}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Discussion}{19}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Exercise 5 -- Berger (2016) simulation: Kupiec backtesting under copula misspecification}{20}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Simulation design}{20}{subsection.6.1}%
+\contentsline {paragraph}{Estimation details.}{20}{section*.53}%
+\contentsline {subsection}{\numberline {6.2}Average estimated parameters}{20}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Empirical VaR coverage and Kupiec test}{21}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Reading the table -- Berger's central message}{21}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Implementation notes}{22}{subsection.6.5}%
+\contentsline {section}{\numberline {7}Concluding remarks}{22}{section.7}%

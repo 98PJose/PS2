@@ -94,6 +94,6 @@
         "weights": [0.5, 0.5],
         "base_seed": 5001,
         "n_jobs": 1,
-        "notes": "Berger (2016) runs n_rep = 10000; we default to 1000 for runtime. Raise this to approach the paper's Monte-Carlo precision."
+        "notes": "Berger (2016) runs n_rep = 10000; we default to 1000 for runtime"
     }
 }

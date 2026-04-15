@@ -1,0 +1,165 @@
+% =====================================================================
+\section{Exercise 5 -- Berger (2016) simulation: Kupiec backtesting under
+copula misspecification}\label{sec:ex5}
+% =====================================================================
+
+We replicate Section~3.1 of Berger (2016) restricted to a Clayton DGP. The
+goal is to quantify how copula misspecification distorts VaR coverage. The
+implementation is in \file{exercise5/} (driver \file{exercise5/main.py}).
+
+% ---------------------------------------------------------------
+\subsection{Simulation design}
+% ---------------------------------------------------------------
+
+Each of $R$ Monte-Carlo replications proceeds in five steps:
+
+\begin{enumerate}\setlength\itemsep{0pt}
+\item \textbf{DGP.} Draw $T+1=1001$ pairs $(U_{1t},U_{2t})$ from a Clayton
+      copula with $\theta\in\{0.5,1.5,2.5\}$ and set
+      $r_{it}=\Phi^{-1}(U_{it})$.
+\item \textbf{In-sample fit.} On observations $1\ldots T=1000$ estimate
+      three competing copula families (Gaussian, $t$, Clayton) treating the
+      $\mathcal{N}(0,1)$ marginals as known.
+\item \textbf{VaR forecast.} Simulate $M=10{,}000$ pairs from each fitted
+      copula, form $r_p^{(s)}=\tfrac12 r_1^{(s)}+\tfrac12 r_2^{(s)}$ and
+      record the empirical $\alpha$-quantile
+      $\widehat{\mathrm{VaR}}_\alpha$, $\alpha\in\{0.01,0.05\}$ (Berger eq.~9).
+\item \textbf{Backtest.} Compare $r_{p,T+1}=\tfrac12 r_{1,T+1}+\tfrac12 r_{2,T+1}$
+      with $\widehat{\mathrm{VaR}}_\alpha$ to obtain a single Bernoulli breach
+      indicator per replication.
+\item \textbf{Aggregate.} After $R=1000$ replications, the empirical failure
+      rate is $\hat\pi=N/R$ where $N=\sum_r I_r$, and the Kupiec
+      unconditional-coverage statistic (Berger eq.~11) is
+      \begin{equation}\label{eq:kupiec}
+      LR_{\text{UC}}=-2\ln\bigl[(1-\alpha)^{R-N}\alpha^N\bigr]
+                    +2\ln\bigl[(1-\hat\pi)^{R-N}\hat\pi^N\bigr]\;\stackrel{H_0}{\sim}\;\chi^2_1.
+      \end{equation}
+\end{enumerate}
+
+\paragraph{Estimation details.}
+Marginals are fixed at $\mathcal{N}(0,1)$, so the IFM step collapses to a
+direct copula MLE on $u_{it}=\Phi(r_{it})$. The Gaussian copula uses
+\eqref{eq:gauss-cop-ll} (Brent), the $t$-copula uses \eqref{eq:t-cop-ll}
+with the reparameterisation $\rho=\tanh\xi$, $\nu=2+e^\lambda$ (unconstrained
+Nelder--Mead). For the Clayton copula we use the closed-form bivariate density
+\[
+\ln c^{Cla}(u_1,u_2;\theta)=\ln(1+\theta)-(1+\theta)(\ln u_1+\ln u_2)
+-\Bigl(2+\tfrac{1}{\theta}\Bigr)\ln\bigl(u_1^{-\theta}+u_2^{-\theta}-1\bigr),
+\]
+maximised by bounded Brent on $(0.01,30)$.
+
+% ---------------------------------------------------------------
+\subsection{Average estimated parameters}
+% ---------------------------------------------------------------
+
+Table~\ref{tab:5-params} reports, for each $\theta_{\text{true}}$, the
+average of the in-sample fitted parameters across the $R=1000$ replications.
+
+\begin{table}[H]\centering\small
+\caption{Average fitted copula parameters across $R=1000$ replications.}
+\label{tab:5-params}
+\begin{tabular}{c|cc|ccc|cc}
+\toprule
+& \multicolumn{2}{c|}{Gaussian} & \multicolumn{3}{c|}{Student $t$} & \multicolumn{2}{c}{Clayton}\\
+$\theta_{\text{true}}$ & $\hat\rho$ (sd) & $\ln L$ & $\hat\rho$ & $\hat\nu$ & $\ln L$ & $\hat\theta$ (sd) & $\ln L$\\\midrule
+$0.5$ & $0.317\ (0.028)$ & --- & $0.315$ & $\to\infty$ & --- & $0.501\ (0.047)$ & ---\\
+$1.5$ & $0.609\ (0.020)$ & --- & $0.616$ & $7.34$      & --- & $1.499\ (0.076)$ & ---\\
+$2.5$ & $0.736\ (0.016)$ & --- & $0.750$ & $5.10$      & --- & $2.501\ (0.101)$ & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Clayton estimator is unbiased and increasingly precise (in absolute terms)
+as the dependence strengthens. The $t$-copula degenerates to Gaussian
+($\hat\nu\to\infty$) at low Clayton dependence -- the lower-tail signal is
+too weak to identify $\nu$ -- but settles at $\hat\nu\approx 5$ at $\theta=2.5$,
+consistent with the Clayton lower-tail coefficient
+$\lambda_L=2^{-1/\theta}=0.757$ at $\theta=2.5$.
+
+% ---------------------------------------------------------------
+\subsection{Empirical VaR coverage and Kupiec test}
+% ---------------------------------------------------------------
+
+Tables~\ref{tab:5-95} and \ref{tab:5-99} report the empirical breach rates
+together with Kupiec rejection markers ($^*$ at the 95\% level, $^{**}$ at
+99\%). Figure~\ref{fig:5} visualises the same numbers as a grouped bar chart.
+
+\begin{table}[H]\centering\small
+\caption{Empirical breach rates (\%) at the 95\% VaR ($\alpha=5\%$).
+$^*$ Kupiec reject at 5\%; $^{**}$ at 1\%.}\label{tab:5-95}
+\begin{tabular}{ccccc}
+\toprule
+DGP $\theta$ & Gaussian & $t$ & Clayton & Nominal\\\midrule
+$0.5$ & $4.60$ & $4.90$ & $4.20$ & $5.00$\\
+$1.5$ & $7.40^{**}$ & $7.20^{**}$ & $5.60$ & $5.00$\\
+$2.5$ & $6.80^{*}$  & $6.80^{*}$  & $5.70$ & $5.00$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\small
+\caption{Empirical breach rates (\%) at the 99\% VaR ($\alpha=1\%$).
+$^*$ Kupiec reject at 5\%; $^{**}$ at 1\%.}\label{tab:5-99}
+\begin{tabular}{ccccc}
+\toprule
+DGP $\theta$ & Gaussian & $t$ & Clayton & Nominal\\\midrule
+$0.5$ & $1.70^{*}$ & $1.80^{*}$ & $1.10$       & $1.00$\\
+$1.5$ & $1.70^{*}$ & $1.30$     & $0.90$       & $1.00$\\
+$2.5$ & $1.90^{*}$ & $1.90^{*}$ & $1.70^{*}$   & $1.00$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_5_failure_rates.png}
+\caption{Empirical failure rates by DGP intensity, copula family, and confidence
+level. Dashed line is the nominal $\alpha$.}
+\label{fig:5}
+\end{figure}
+
+% ---------------------------------------------------------------
+\subsection{Reading the table -- Berger's central message}
+% ---------------------------------------------------------------
+
+\begin{enumerate}\setlength\itemsep{0pt}
+\item At low Clayton dependence ($\theta=0.5$, Kendall's $\tau=0.20$) the
+      three copulas perform similarly at 95\%, but Gaussian and $t$ already
+      reject Kupiec at the 99\% level: \emph{the lower tail is too thin under
+      a Gaussian copula}, breaches occur 1.7--1.8\% of the time vs.\ a
+      nominal 1\%.
+\item At medium dependence ($\theta=1.5$, $\tau=0.43$) the misspecification
+      is severe at the 95\% level: Gaussian 7.4\% (\textbf{**}), $t$ 7.2\%
+      (\textbf{**}). The $t$-copula partially repairs the 99\% miscoverage
+      because it matches the heavier joint tails, but Gaussian remains
+      rejected.
+\item At high dependence ($\theta=2.5$, $\tau=0.56$) all three models start
+      under-forecasting losses at 99\%; even the correctly-specified Clayton
+      drifts up to 1.7\% (rejected at 5\%) due to small-sample VaR-quantile
+      noise.
+\end{enumerate}
+
+The take-away is fully aligned with Berger: \textbf{ignoring lower-tail
+dependence biases VaR forecasts toward optimism}. A dynamic risk-management
+system anchored on a Gaussian copula will systematically underestimate
+losses, and the unconditional-coverage Kupiec test reliably detects this
+under the simulation lengths used in practice.
+
+% ---------------------------------------------------------------
+\subsection{Implementation notes}
+% ---------------------------------------------------------------
+
+The Monte-Carlo loop (\code{exercise5.simulation.run\_scenario}) is
+optionally parallelised through \code{concurrent.futures.ProcessPoolExecutor}.
+A single replication takes a few milliseconds because (i) marginals are
+known, (ii) the $t$-copula reparameterisation removes constraints, and
+(iii) the Clayton MLE is one-dimensional Brent. The full
+$3\times 3\times 1000=9000$ replications complete in under one minute on a
+single core.
+
+Compared to the original paper, our \file{config.json} uses $R=1000$
+replications instead of $R=10{,}000$ to keep the Monte-Carlo lightweight; the
+qualitative ranking of the three copulas is preserved, but individual breach
+rates carry a binomial standard error of
+$\sqrt{\alpha(1-\alpha)/R}\approx 0.7\%$ at $\alpha=5\%$ and $0.3\%$ at
+$\alpha=1\%$, which is the correct scale for the small fluctuations
+observed in Tables~\ref{tab:5-95}--\ref{tab:5-99}.

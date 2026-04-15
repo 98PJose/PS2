@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.0] - 2026-04-15
+
+### Added
+- `main.py` (root): Top-level orchestrator. Sequentially runs `exercise{1..5}.main`, then compiles the LaTeX report under `report/` (two pdflatex passes for cross-refs / TOC). CLI flags: `--only N [...]`, `--skip-exercises`, `--skip-latex`, `--latex-engine`, `--latex-passes`. Captures per-stage success, wall-clock time, and prints a final pass/fail summary; exits with code 1 on any failure.
+- `report/`: Full LaTeX report covering all five exercises.
+  - `report/main.tex`: Master document (preamble, abstract, intro, conclusions). Includes `siunitx`, `booktabs`, `cleveref`, `listings`, custom math macros. Graphics path set to `../figures/`.
+  - `report/sections/exercise1.tex`: Bivariate copula simulation, conditional inversion derivations (Clayton, Survival Clayton, Gaussian, Student-t, FGM), 1.a dependence-measure table and scatter, 1.b portfolio statistics + VaR table and histogram, 1.c Gaussian IFM (eq 31 LL derivation), 1.d mixture + t-copula IFM (eq 38 LL derivation).
+  - `report/sections/exercise2.tex`: GARCH(1,1) eq 67, GJR(1,1) eq 71, DCC dynamics eqs 68-69, Gaussian DCC LL eq 72, Student-t DCC LL eq 76 — all with full derivations. Tables for 2.1 descriptives, 2.2a/b/c parameter estimates, 2.3 path comparison summary, 2.4 t-copula DCC.
+  - `report/sections/exercise3.tex`: NM-copula conditional CDF derivation, Brent-inversion in u_1 with the slide-consistent convention remark, results table and figure.
+  - `report/sections/exercise4.tex`: Black–Scholes pricing, CC/PP eqs 4–5, 4-scenario ATM table (4.1–4.4) + figures, copula-invariance discussion for cc/pp vs cc2/pp2.
+  - `report/sections/exercise5.tex`: Berger Section 3.1 simulation design, Kupiec UC eq 11, Clayton log-density derivation, fitted-parameter and breach-rate tables (95%/99%), bar-chart figure, discussion linking misspecification to coverage failures.
+- `changelog.md`: This entry.
+- `readme.html`: Added `report/` documentation section.
+
 ## [5.0.0] - 2026-04-15
 
 ### Added
