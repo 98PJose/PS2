@@ -1,12 +1,12 @@
 """
-Top-level orchestrator for Problem Set 2.
+Top-level orchestrator for Homework_2026.
 
 Runs every exercise sub-package's ``main`` module sequentially and then
 compiles the LaTeX report under ``report/`` to produce ``report/main.pdf``.
 
 Usage
 -----
-    python -m main                        # from inside PS2/
+    python -m main                        # from inside Homework_2026/
     python main.py                        # equivalent
     python main.py --skip-exercises       # only compile the LaTeX report
     python main.py --skip-latex           # only run the Python exercises
@@ -14,7 +14,7 @@ Usage
     python main.py --latex-engine xelatex # change the TeX engine
 
 Exit code is 0 on full success, 1 if any stage fails (the script keeps going
-after a failure so the user sees the full picture, then reports a summary).
+after a failure, then reports a summary).
 """
 
 from __future__ import annotations
