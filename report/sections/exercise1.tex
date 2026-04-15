@@ -8,7 +8,7 @@ Clayton} $\theta=5$, \textsc{Gaussian} $\rho=-0.7$, \textsc{Student-$t$}
 $\rho=-0.7,\nu=5$, \textsc{FGM} $\lambda=-0.5$ and \textsc{FGM} $\lambda=0$).
 The implementation lives in \file{exercise1/} and is driven by
 \file{exercise1/main.py}. Throughout, $V_1,V_2$ denote independent
-$\mathcal{U}(0,1)$ draws used as the source of randomness, while $(U_1,U_2)$
+$\mathcal{U}(0,1)$ draws, while $(U_1,U_2)$
 is the resulting copula sample.
 
 % ---------------------------------------------------------------
@@ -24,7 +24,7 @@ By construction $C_2(\cdot\given u_2)$ is a CDF on $(0,1)$. The
 \[
 \boxed{\;U_2\sim\mathcal{U}(0,1),\qquad U_1\;=\;C_2^{-1}(V_1\given U_2),\quad V_1\sim\mathcal{U}(0,1).\;}
 \]
-This is exactly what every routine in \file{exercise1/copula\_sim.py} implements.
+This is what every routine in \file{exercise1/copula\_sim.py} implements.
 
 % ---------------------------------------------------------------
 \subsection{Closed-form simulators}
@@ -44,8 +44,7 @@ U_1=\Bigl[\,1+u_2^{-\theta}\bigl(v_1^{-\theta/(\theta+1)}-1\bigr)\Bigr]^{-1/\the
 \paragraph{Survival Clayton.} The survival copula
 $\hat C(u_1,u_2)=u_1+u_2-1+C(1-u_1,1-u_2)$ is sampled by drawing
 $(\tilde U_1,\tilde U_2)$ from Clayton and setting
-$U_i=1-\tilde U_i$, which produces the upper-tail counterpart of the Clayton
-clustering.
+$U_i=1-\tilde U_i$, which produces the upper-tail counterpart of the Clayton.
 
 \paragraph{Gaussian ($-1<\rho<1$).}
 With $X_i=\Phi^{-1}(U_i)$,
@@ -76,27 +75,25 @@ $\psi u_1^2-(1+\psi)u_1+v_1=0$, with the admissible root
 U_1=\frac{(1+\psi)-\sqrt{(1+\psi)^2-4\psi v_1}}{2\psi}\,.
 \end{equation}
 At $\lambda=0$ we have independence and $U_1=v_1$ is recovered as the limit.
-The Python implementation guards against $\psi\to 0$ via a \code{safe\_psi}
-mask (\file{copula\_sim.py}).
 
 \paragraph{Mixture (used in 1.d).} A copula mixture
 $C=\pi C_A+(1-\pi)C_B$ is sampled by drawing a Bernoulli($\pi$) indicator
-and selecting $C_A$ or $C_B$ component-wise.
+and selecting $C_A$ or $C_B$.
 
 % ---------------------------------------------------------------
 \subsection{1.a -- Scatter plots and dependence measures}
 % ---------------------------------------------------------------
 
-For each copula we draw $N=10^5$ pairs and compute the three classical
+For each copula we draw $N=10^5$ pairs and compute the three
 dependence measures: Pearson's $\rho$, Spearman's $\rho_S$ and Kendall's $\tau$.
-Pearson is sensitive to the marginals, while Spearman and Kendall are
-\emph{copula-only} invariants.
+Pearson is sensitive to the marginals and an average, while Spearman and Kendall 
+capture better tail dependence.
 Numerical results (Table~\ref{tab:1a}) and scatter plots
 (Figure~\ref{fig:1a}) show:
 \begin{itemize}\setlength\itemsep{0pt}
-\item Clayton concentrates mass in the south-west corner (lower-tail dependence).
-\item Survival Clayton concentrates mass in the north-east corner (upper-tail dependence).
-\item Gaussian and Student-$t$ at $\rho=-0.7$ produce the elliptical anti-diagonal pattern;
+\item Clayton has lower-tail dependence.
+\item Survival Clayton has upper-tail dependence.
+\item Gaussian and Student-$t$ at $\rho=-0.7$ produce the elliptical dependence;
       $t$ adds heavier joint extremes.
 \item FGM is essentially close to independence: its dependence parameter
       is bounded ($|\tau|\le 2/9$).
@@ -122,10 +119,9 @@ FGM $\lambda=0$                & $-0.0044$ & $-0.0044$ & $-0.0029$\\
 \caption{Dependent $\mathcal{U}(0,1)$ scatter plots, $N=10^5$.}\label{fig:1a}
 \end{figure}
 
-\paragraph{Sanity check on Kendall's $\tau$.} For Clayton,
+\paragraph{Kendall's $\tau$:} For Clayton,
 $\tau=\theta/(\theta+2)=10/12=0.8333$, matching the simulated $0.8335$. For
 Gaussian/$t$, $\tau=(2/\pi)\arcsin\rho=-0.4936$, matching $-0.4947$ and $-0.4948$.
-This is a strong validation of the simulator.
 
 % ---------------------------------------------------------------
 \subsection{1.b -- Portfolio statistics, VaR, and correlation across copulas}
@@ -166,11 +162,11 @@ The variance of $r_p$ is
 \]
 so a positive copula increases $\Var(r_p)$ relative to a negatively dependent
 one (compare Clayton vs.\ Gaussian). VaR at level $\alpha$ is the empirical
-$\alpha$-quantile $\widehat{\mathrm{VaR}}_\alpha=\hat F_{r_p}^{-1}(\alpha)$, computed
-in \code{exercise1.portfolio.compute\_stats} with \code{numpy.quantile}.
+$\alpha$-quantile $\widehat{\mathrm{VaR}}_\alpha=\hat F_{r_p}^{-1}(\alpha)$
 Negative dependence (Gaussian $\rho=-0.7$) drastically reduces $\sigma_p$ and
 hence the magnitude of VaR, as expected from diversification.
 
+\newpage
 % ---------------------------------------------------------------
 \subsection{1.c -- Estimating a Gaussian copula by IFM with EDF margins}
 % ---------------------------------------------------------------
@@ -184,7 +180,7 @@ Given an i.i.d. sample $\{(r_{1t},r_{2t})\}_{t=1}^T$ the Inference-Functions-for
 \end{enumerate}
 When $\hat F_i$ is the empirical CDF $\hat F_i(x)=\frac{1}{T+1}\sum_t \indic\{r_{it}\le x\}$
 (``EDF'' margin) we obtain the \emph{Canonical Maximum Likelihood} (CML) variant.
-The shift from $T$ to $T+1$ avoids exact 0/1 values that would blow up
+The shift from $T$ to $T+1$ avoids values that would blow up
 $\Phi^{-1}(\hat u)$.
 
 \paragraph{Gaussian copula log-likelihood (slides eq.\,31).}
@@ -198,7 +194,7 @@ $\Psi=\bigl(\begin{smallmatrix}1&\rho\\\rho&1\end{smallmatrix}\bigr)$. Then
 \label{eq:gauss-cop-ll}
 \end{align}
 We maximise $\sum_t \ln c^G$ in $\rho$ by Brent's method on $(-0.999,0.999)$
-(\code{exercise1.estimation.estimate\_gaussian\_copula}).
+(\code{exercise1.estimation}).
 
 \paragraph{Result.} On the Gaussian-copula sample with true $\rho=-0.7$ we obtain
 $\hat\rho=-0.702095$, $\ln L=33{,}949.36$, with successful convergence. The
@@ -237,6 +233,6 @@ $Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
 \paragraph{Result.} The fitted t-copula returns $\hat\rho=0.929316$, $\hat\nu=2.1698$,
 $\ln L=96{,}886.07$. The very small $\hat\nu$ is the t-copula's only way to
 mimic the heavy joint tails of the Clayton mixture --- a Gaussian fit on the
-same data gives $\hat\rho=0.9057$ and $\ln L=85{,}791$, more than $11{,}000$
-log-likelihood points behind. This is a textbook example of how IFM correctly
+same data gives $\hat\rho=0.9057$ and $\ln L=85{,}791$.
+This is a textbook example of how IFM correctly
 identifies tail dependence by inflating the t-copula degrees of freedom downward.

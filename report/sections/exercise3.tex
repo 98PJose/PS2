@@ -13,7 +13,7 @@ C^{NM}(u_1,u_2)=\pi\,C^G_{\rho_1}(u_1,u_2)+(1-\pi)\,C^G_{\rho_2}(u_1,u_2),
 \quad 0<\pi<1.
 \]
 Since the conditional CDF is linear in the components, the conditional NM CDF
-inherits exactly the same structure:
+inherits the same structure:
 \begin{equation}\label{eq:nm-cond}
 C^{NM}(u_1\given u_2)
 =\pi\,\Phi\!\Bigl(\tfrac{\Phi^{-1}(u_1)-\rho_1\Phi^{-1}(u_2)}{\sqrt{1-\rho_1^2}}\Bigr)
@@ -37,11 +37,11 @@ with $\varepsilon=10^{-4}$ in
 \code{exercise3.nm\_copula.nm\_quantile\_u1}.
 
 \begin{remark}[Why we invert in $u_1$ and not in $u_2$]
-The literal reading of the problem statement asks one to back out $u_2$
+The reading of the problem statement asks to obtain $u_2$
 given $u_1$. However, with $\pi=0.3$, $\rho_1=-0.7$, $\rho_2=0.4$ the map
 $u_2\mapsto C^{NM}(u_1\given u_2)$ has range bounded inside $(0.3,0.7)$ for a
 fixed $u_1$ in the interior, so no $u_2$-solution exists for $q\in\{0.05,0.95\}$.
-Slide-consistent reading inverts in $u_1$, which has range $(0,1)$ and a unique
+Consistently with the slides we invert in $u_1$, which has range $(0,1)$ and a unique
 solution for every $q$.
 \end{remark}
 
@@ -80,11 +80,8 @@ $\pi=0.3$, $\rho_1=-0.7$, $\rho_2=0.4$.}
 \paragraph{Intuition.}
 The median curve ($q=0.5$) is symmetric about $u_2=0.5$ because, by
 construction, the conditional median of a continuous copula passes through
-$(0.5,0.5)$ and the NM kernel is symmetric in the Normal scores. The outer
-quantiles are visibly asymmetric: in the south-west region ($u_2$ small) the
-$q=0.05$ branch is squeezed close to zero by the negative-correlation
-component ($\rho_1=-0.7$, weight $0.3$); in the north-east region
-($u_2$ large) the $q=0.05$ branch is lifted because the positive-correlation
-component ($\rho_2=0.4$, weight $0.7$) dominates. The mixture therefore
-generates a non-monotone, ``bow-shaped'' tail behaviour that no single
-Gaussian copula can replicate.
+$(0.5,0.5)$. The outer quantiles are visibly asymmetric: in the lower region ($u_2$ small) the
+$q=0.05$ branch is close to zero by the negative-correlation ($\rho_1=-0.7$, weight $0.3$); 
+in the positive region ($u_2$ large) the $q=0.05$ quantile is lifted because the positive-correlation
+($\rho_2=0.4$, weight $0.7$) dominates. The mixture therefore generates a non-monotone,
+``bow-shaped'' tail behaviour.

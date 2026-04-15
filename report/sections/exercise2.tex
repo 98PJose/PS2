@@ -2,7 +2,7 @@
 \section{Exercise 2 -- DCC dynamics on cryptocurrency returns}\label{sec:ex2}
 % =====================================================================
 
-We work with the daily log-returns of three large-cap crypto assets
+We work with the daily log-returns of three crypto assets
 (BTC, ETH, ADA) loaded from \file{crypto.xlsx}. The sample spans
 $T=1827$ trading days from 2 January 2020 to 1 January 2025. The whole pipeline
 is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
@@ -29,10 +29,9 @@ $\rho_{\textsc{btc-eth}}=0.8355$,\quad
 $\rho_{\textsc{btc-ada}}=0.6928$,\quad
 $\rho_{\textsc{eth-ada}}=0.7353$.
 
-The three series exhibit textbook crypto stylised facts: near-zero mean,
+The three series exhibit crypto stylised facts: near-zero mean,
 markedly negative skew (especially BTC and ETH), and a pronounced excess
-kurtosis (Pearson kurtosis $\gg 3$). High pair-wise correlations justify a
-\emph{joint} dependence model.
+kurtosis (Pearson kurtosis $\gg 3$).
 
 % ---------------------------------------------------------------
 \subsection{Theoretical framework: GARCH/GJR + DCC}
@@ -77,8 +76,7 @@ Q_t &=(1-a-b)\,\hat\Omega+a\,z_{t-1}z_{t-1}^\top+b\,Q_{t-1},\quad Q_1=\hat\Omega
 \Psi_t &=\Lambda_t^{-1/2}\,Q_t\,\Lambda_t^{-1/2},\qquad \Lambda_t=\diag(Q_t),\label{eq:dcc-psi}
 \end{align}
 where $\hat\Omega=\frac{1}{T}\sum_t z_tz_t^\top$ and $a,b>0$, $a+b<1$. The
-normalisation in \eqref{eq:dcc-psi} ensures $\Psi_t$ is a correlation matrix
-(unit diagonal).
+normalisation in \eqref{eq:dcc-psi} ensures $\Psi_t$ is a correlation matrix.
 
 \paragraph{Gaussian DCC log-likelihood (slides eq.\,72).}
 The copula likelihood (margins concentrated out) is
@@ -106,15 +104,15 @@ likelihoods are maximised by Nelder--Mead in \code{exercise2.dcc}.
 \paragraph{(a) EDF margins.} $\hat a=0.012308$, $\hat b=0.987592$, $\hat a+\hat
 b=0.999900$, $\ln L=1954.19$, with unconditional correlations
 $\hat\Omega_{\textsc{btc-eth}}=0.8248$, $\hat\Omega_{\textsc{btc-ada}}=0.7039$,
-$\hat\Omega_{\textsc{eth-ada}}=0.7418$. The persistence is essentially 1 --- a
-typical IGARCH-style finding driven by the strong persistence of the EDF
-ranks themselves. See Figure~\ref{fig:22a}.
+$\hat\Omega_{\textsc{eth-ada}}=0.7418$. The persistence is essentially 1.
+See Figure~\ref{fig:22a}.
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.85\linewidth]{fig_2_2a_dcc_edf.png}
 \caption{Dynamic correlations under DCC-Gaussian with EDF margins.}\label{fig:22a}
 \end{figure}
 
+\newpage
 \paragraph{(b) GARCH(1,1)-N margins.} The marginal estimates are reported in
 Table~\ref{tab:22b-margins}. The DCC stage gives $\hat a=0.060304$,
 $\hat b=0.900190$, $\hat a+\hat b=0.960494$, $\ln L=1964.18$.
@@ -162,7 +160,7 @@ ADA & $0.1288$ & $0.8280$ & $0.0265$ & $0.9701$ & $4634.15$\\
 \subsection{2.3 -- Comparison of dynamic correlation paths}
 % ---------------------------------------------------------------
 
-Figure~\ref{fig:23} overlays the three pair-wise correlation paths for the
+Figure~\ref{fig:23} overlays the three correlation paths for the
 three marginal specifications. Table~\ref{tab:23-summary} summarises the
 sample distribution of each path.
 
@@ -195,14 +193,11 @@ Pair & Margin & Mean & Std & Min & Max\\\midrule
 \end{figure}
 
 \paragraph{Reading the comparison.}
-The three series share the same qualitative pattern --- correlations rise
-during the COVID-19 shock (March 2020), the May 2021 sell-off, the FTX
-collapse (Nov 2022), and the late-2023 risk-on rally. Quantitatively, EDF
-margins produce the smoothest path (the rank transformation truncates extreme
-co-movements), while GARCH/GJR margins capture sharper short-run drops in
+The three series share the same pattern, correlations rise
+during shocks as the COVID-19 shock (March 2020). Quantitatively, EDF
+produces the smoothest path, while GARCH/GJR capture sharper short-run drops in
 dependence. The $\hat a+\hat b$ estimate falls from $0.9999$ (EDF) to $\approx
-0.96$ once the marginal variance is filtered, which is the standard outcome
-when margins absorb most of the persistence.
+0.96$ once the marginal variance is filtered.
 
 % ---------------------------------------------------------------
 \subsection{2.4 -- DCC under a Student-$t$ copula (EDF margins)}

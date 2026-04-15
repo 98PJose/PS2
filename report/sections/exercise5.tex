@@ -138,7 +138,7 @@ level. Dashed line is the nominal $\alpha$.}
       noise.
 \end{enumerate}
 
-The take-away is fully aligned with Berger: \textbf{ignoring lower-tail
+The conclusion aligned with Berger: \textbf{ignoring lower-tail
 dependence biases VaR forecasts toward optimism}. A dynamic risk-management
 system anchored on a Gaussian copula will systematically underestimate
 losses, and the unconditional-coverage Kupiec test reliably detects this
@@ -148,18 +148,7 @@ under the simulation lengths used in practice.
 \subsection{Implementation notes}
 % ---------------------------------------------------------------
 
-The Monte-Carlo loop (\code{exercise5.simulation.run\_scenario}) is
-optionally parallelised through \code{concurrent.futures.ProcessPoolExecutor}.
-A single replication takes a few milliseconds because (i) marginals are
-known, (ii) the $t$-copula reparameterisation removes constraints, and
-(iii) the Clayton MLE is one-dimensional Brent. The full
-$3\times 3\times 1000=9000$ replications complete in under one minute on a
-single core.
-
 Compared to the original paper, our \file{config.json} uses $R=1000$
-replications instead of $R=10{,}000$ to keep the Monte-Carlo lightweight; the
-qualitative ranking of the three copulas is preserved, but individual breach
-rates carry a binomial standard error of
-$\sqrt{\alpha(1-\alpha)/R}\approx 0.7\%$ at $\alpha=5\%$ and $0.3\%$ at
-$\alpha=1\%$, which is the correct scale for the small fluctuations
-observed in Tables~\ref{tab:5-95}--\ref{tab:5-99}.
+replications instead of $R=10{,}000$ to reduce computation time; the
+qualitative ranking of the three copulas is preserved, but this increases
+the standard error.
