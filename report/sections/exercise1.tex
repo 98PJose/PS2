@@ -84,9 +84,9 @@ and selecting $C_A$ or $C_B$.
 \subsection{1.a -- Scatter plots and dependence measures}
 % ---------------------------------------------------------------
 
-For each copula we draw $N=10^5$ pairs and compute the three
+For each copula we draw $N=\ExOneNs$ pairs and compute the three
 dependence measures: Pearson's $\rho$, Spearman's $\rho_S$ and Kendall's $\tau$.
-Pearson is sensitive to the marginals and an average, while Spearman and Kendall 
+Pearson is sensitive to the marginals and an average, while Spearman and Kendall
 capture better tail dependence.
 Numerical results (Table~\ref{tab:1a}) and scatter plots
 (Figure~\ref{fig:1a}) show:
@@ -100,28 +100,24 @@ Numerical results (Table~\ref{tab:1a}) and scatter plots
 \end{itemize}
 
 \begin{table}[H]\centering\small
-\caption{Dependence measures, $N=10^5$ draws.}\label{tab:1a}
+\caption{Dependence measures, $N=\ExOneNs$ draws.}\label{tab:1a}
 \begin{tabular}{lrrr}
 \toprule
 Copula & Pearson & Spearman & Kendall\\\midrule
-Clayton $\theta=10$            & $0.9584$ & $0.9583$ & $0.8335$\\
-Survival Clayton $\theta=5$    & $0.8844$ & $0.8847$ & $0.7141$\\
-Gaussian $\rho=-0.7$           & $-0.6840$ & $-0.6839$ & $-0.4947$\\
-Student-$t$ $\rho=-0.7,\nu=5$  & $-0.6723$ & $-0.6722$ & $-0.4948$\\
-FGM $\lambda=-0.5$             & $-0.1706$ & $-0.1706$ & $-0.1139$\\
-FGM $\lambda=0$                & $-0.0044$ & $-0.0044$ & $-0.0029$\\
+\ExOneDependenceBody
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.95\linewidth]{fig_1a_scatter.png}
-\caption{Dependent $\mathcal{U}(0,1)$ scatter plots, $N=10^5$.}\label{fig:1a}
+\caption{Dependent $\mathcal{U}(0,1)$ scatter plots, $N=\ExOneNs$.}\label{fig:1a}
 \end{figure}
 
-\paragraph{Kendall's $\tau$:} For Clayton,
-$\tau=\theta/(\theta+2)=10/12=0.8333$, matching the simulated $0.8335$. For
-Gaussian/$t$, $\tau=(2/\pi)\arcsin\rho=-0.4936$, matching $-0.4947$ and $-0.4948$.
+\paragraph{Kendall's $\tau$:} For Clayton the theoretical value is
+$\tau=\theta/(\theta+2)=10/12\approx 0.8333$, essentially identical to the
+simulated value in Table~\ref{tab:1a}. For Gaussian/$t$ the theoretical value
+is $\tau=(2/\pi)\arcsin\rho\approx -0.4936$, which the simulation also recovers.
 
 % ---------------------------------------------------------------
 \subsection{1.b -- Portfolio statistics, VaR, and correlation across copulas}
@@ -140,12 +136,7 @@ $r_2\!\sim\!t_6$.}\label{tab:1b}
 \begin{tabular}{lrrrrrr}
 \toprule
 Copula & Mean & Std & Skew & Kurt & VaR$_{1\%}$ & VaR$_{5\%}$\\\midrule
-Clayton           & $0.0007$ & $1.1116$ & $-0.1683$ & $4.1135$ & $-2.7795$ & $-1.8168$\\
-Surv. Clayton     & $0.0012$ & $1.0915$ & $\phantom{-}0.2290$ & $4.0641$ & $-2.4421$ & $-1.6886$\\
-Gaussian          & $0.0007$ & $0.5394$ & $-0.0197$ & $6.6978$ & $-1.3527$ & $-0.8432$\\
-Student-$t$       & $0.0008$ & $0.5399$ & $\phantom{-}0.0029$ & $6.8199$ & $-1.3815$ & $-0.8472$\\
-FGM $\lambda=-0.5$ & $0.0010$ & $0.7786$ & $-0.0039$ & $5.1494$ & $-1.9349$ & $-1.2390$\\
-FGM $\lambda=0$    & $0.0011$ & $0.8342$ & $-0.0023$ & $4.7379$ & $-2.0458$ & $-1.3340$\\
+\ExOnePortfolioBody
 \bottomrule
 \end{tabular}
 \end{table}
@@ -162,7 +153,7 @@ The variance of $r_p$ is
 \]
 so a positive copula increases $\Var(r_p)$ relative to a negatively dependent
 one (compare Clayton vs.\ Gaussian). VaR at level $\alpha$ is the empirical
-$\alpha$-quantile $\widehat{\mathrm{VaR}}_\alpha=\hat F_{r_p}^{-1}(\alpha)$
+$\alpha$-quantile $\widehat{\mathrm{VaR}}_\alpha=\hat F_{r_p}^{-1}(\alpha)$.
 Negative dependence (Gaussian $\rho=-0.7$) drastically reduces $\sigma_p$ and
 hence the magnitude of VaR, as expected from diversification.
 
@@ -196,24 +187,26 @@ $\Psi=\bigl(\begin{smallmatrix}1&\rho\\\rho&1\end{smallmatrix}\bigr)$. Then
 We maximise $\sum_t \ln c^G$ in $\rho$ by Brent's method on $(-0.999,0.999)$
 (\code{exercise1.estimation}).
 
-\paragraph{Result.} On the Gaussian-copula sample with true $\rho=-0.7$ we obtain
-$\hat\rho=-0.702095$, $\ln L=33{,}949.36$, with successful convergence. The
-estimator recovers the truth to three decimals on $10^5$ observations.
+\paragraph{Result.} On the Gaussian-copula sample with true $\rho=\ExOneICRhoTrue$ we obtain
+$\hat\rho=\ExOneICRhoHat$, $\ln L=\ExOneICLogLik$, with successful convergence. The
+estimator recovers the truth to three decimals on $\ExOneNs$ observations.
 
 % ---------------------------------------------------------------
 \subsection{1.d -- Mixture DGP and t-copula IFM estimation}
 % ---------------------------------------------------------------
 
-We now generate $N=10^5$ pairs from the mixture
+We now generate $N=\ExOneNs$ pairs from the mixture
 \[
 C=0.6\;C^{Cla}_{\theta=10}+0.4\;\hat C^{Cla}_{\theta=5},
 \]
 which produces strong dependence in both tails (Figure~\ref{fig:1d}). The
-sample dependence measures are Pearson $0.9283$, Spearman $0.9282$, Kendall $0.7750$.
+sample dependence measures are Pearson $\ExOneIDMixPearson$, Spearman
+$\ExOneIDMixSpearman$, Kendall $\ExOneIDMixKendall$.
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.65\linewidth]{fig_1d_mixture.png}
-\caption{Mixture $0.6\,C^{Cla}_{10}+0.4\,\hat C^{Cla}_{5}$ scatter ($N=10^5$).}
+\caption{Mixture $0.6\,C^{Cla}_{10}+0.4\,\hat C^{Cla}_{5}$ scatter
+($N=\ExOneNs$).}
 \label{fig:1d}
 \end{figure}
 
@@ -230,9 +223,10 @@ $Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
 \end{align}
 \code{exercise1.estimation.estimate\_t\_copula} maximises this by Nelder--Mead.
 
-\paragraph{Result.} The fitted t-copula returns $\hat\rho=0.929316$, $\hat\nu=2.1698$,
-$\ln L=96{,}886.07$. The very small $\hat\nu$ is the t-copula's only way to
-mimic the heavy joint tails of the Clayton mixture --- a Gaussian fit on the
-same data gives $\hat\rho=0.9057$ and $\ln L=85{,}791$.
-This is a textbook example of how IFM correctly
-identifies tail dependence by inflating the t-copula degrees of freedom downward.
+\paragraph{Result.} The fitted t-copula returns $\hat\rho=\ExOneIDTRhoHat$,
+$\hat\nu=\ExOneIDTNuHat$, $\ln L=\ExOneIDTLogLik$. The small $\hat\nu$ is the
+t-copula's only way to mimic the heavy joint tails of the Clayton mixture ---
+a Gaussian fit on the same data gives $\hat\rho=\ExOneIDGRhoHat$ and
+$\ln L=\ExOneIDGLogLik$, a log-likelihood gap of $\ExOneIDLLGain$. This is a
+textbook example of how IFM identifies tail dependence by inflating the
+t-copula degrees of freedom downward.

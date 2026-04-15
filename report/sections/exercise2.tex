@@ -4,8 +4,8 @@
 
 We work with the daily log-returns of three crypto assets
 (BTC, ETH, ADA) loaded from \file{crypto.xlsx}. The sample spans
-$T=1827$ trading days from 2 January 2020 to 1 January 2025. The whole pipeline
-is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
+$T=\ExTwoT$ trading days from \ExTwoDateStart{} to \ExTwoDateEnd. The whole
+pipeline is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
 
 % ---------------------------------------------------------------
 \subsection{2.1 -- Univariate descriptives and sample correlations}
@@ -17,17 +17,15 @@ kurtosis is the \emph{regular} (non-excess) version.}\label{tab:21-desc}
 \begin{tabular}{lrrrr}
 \toprule
 Asset & Mean & Std & Skew & Kurt\\\midrule
-BTC & $0.001404$ & $0.034701$ & $-1.6580$ & $29.3539$\\
-ETH & $0.001780$ & $0.044965$ & $-1.3830$ & $23.2127$\\
-ADA & $0.001777$ & $0.052556$ & $-0.2361$ & $11.7605$\\
+\ExTwoDescriptivesBody
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Sample correlation matrix.}
-$\rho_{\textsc{btc-eth}}=0.8355$,\quad
-$\rho_{\textsc{btc-ada}}=0.6928$,\quad
-$\rho_{\textsc{eth-ada}}=0.7353$.
+$\rho_{\textsc{btc-eth}}=\ExTwoCorrBTCETH$,\quad
+$\rho_{\textsc{btc-ada}}=\ExTwoCorrBTCADA$,\quad
+$\rho_{\textsc{eth-ada}}=\ExTwoCorrETHADA$.
 
 The three series exhibit crypto stylised facts: near-zero mean,
 markedly negative skew (especially BTC and ETH), and a pronounced excess
@@ -101,11 +99,12 @@ likelihoods are maximised by Nelder--Mead in \code{exercise2.dcc}.
 \subsection{2.2 -- DCC under three marginal specifications}
 % ---------------------------------------------------------------
 
-\paragraph{(a) EDF margins.} $\hat a=0.012308$, $\hat b=0.987592$, $\hat a+\hat
-b=0.999900$, $\ln L=1954.19$, with unconditional correlations
-$\hat\Omega_{\textsc{btc-eth}}=0.8248$, $\hat\Omega_{\textsc{btc-ada}}=0.7039$,
-$\hat\Omega_{\textsc{eth-ada}}=0.7418$. The persistence is essentially 1.
-See Figure~\ref{fig:22a}.
+\paragraph{(a) EDF margins.} $\hat a=\ExTwoAA$, $\hat b=\ExTwoAB$, $\hat
+a+\hat b=\ExTwoAPers$, $\ln L=\ExTwoALL$, with unconditional correlations
+$\hat\Omega_{\textsc{btc-eth}}=\ExTwoAOmegaBTCETH$,
+$\hat\Omega_{\textsc{btc-ada}}=\ExTwoAOmegaBTCADA$,
+$\hat\Omega_{\textsc{eth-ada}}=\ExTwoAOmegaETHADA$. The persistence is
+essentially 1. See Figure~\ref{fig:22a}.
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.85\linewidth]{fig_2_2a_dcc_edf.png}
@@ -114,17 +113,15 @@ See Figure~\ref{fig:22a}.
 
 \newpage
 \paragraph{(b) GARCH(1,1)-N margins.} The marginal estimates are reported in
-Table~\ref{tab:22b-margins}. The DCC stage gives $\hat a=0.060304$,
-$\hat b=0.900190$, $\hat a+\hat b=0.960494$, $\ln L=1964.18$.
+Table~\ref{tab:22b-margins}. The DCC stage gives $\hat a=\ExTwoBA$,
+$\hat b=\ExTwoBB$, $\hat a+\hat b=\ExTwoBPers$, $\ln L=\ExTwoBLL$.
 
 \begin{table}[H]\centering\small
 \caption{GARCH(1,1)-N marginal estimates.}\label{tab:22b-margins}
 \begin{tabular}{lrrrrr}
 \toprule
 Asset & $\omega$ & $\alpha$ & $\beta$ & $\alpha+\beta$ & $\ln L$\\\midrule
-BTC & $4.88\times 10^{-5}$ & $0.1146$ & $0.8595$ & $0.9741$ & $5324.93$\\
-ETH & $3.95\times 10^{-5}$ & $0.1030$ & $0.8850$ & $0.9880$ & $4943.94$\\
-ADA & $1.11\times 10^{-4}$ & $0.1365$ & $0.8336$ & $0.9701$ & $4633.55$\\
+\ExTwoBGarchBody
 \bottomrule
 \end{tabular}
 \end{table}
@@ -135,8 +132,8 @@ ADA & $1.11\times 10^{-4}$ & $0.1365$ & $0.8336$ & $0.9701$ & $4633.55$\\
 \end{figure}
 
 \paragraph{(c) GJR(1,1)-N margins.}
-Table~\ref{tab:22c-margins}. DCC parameters: $\hat a=0.062861$, $\hat b=0.902904$,
-$\hat a+\hat b=0.965765$, $\ln L=1934.41$.
+Table~\ref{tab:22c-margins}. DCC parameters: $\hat a=\ExTwoCA$,
+$\hat b=\ExTwoCB$, $\hat a+\hat b=\ExTwoCPers$, $\ln L=\ExTwoCLL$.
 
 \begin{table}[H]\centering\small
 \caption{GJR(1,1)-N marginal estimates. $\gamma$ is the leverage coefficient.}
@@ -144,9 +141,7 @@ $\hat a+\hat b=0.965765$, $\ln L=1934.41$.
 \begin{tabular}{lrrrrr}
 \toprule
 Asset & $\alpha$ & $\beta$ & $\gamma$ & Persistence & $\ln L$\\\midrule
-BTC & $0.0713$ & $0.8426$ & $0.0996$ & $0.9637$ & $5340.71$\\
-ETH & $0.0852$ & $0.8776$ & $0.0457$ & $0.9857$ & $4946.55$\\
-ADA & $0.1288$ & $0.8280$ & $0.0265$ & $0.9701$ & $4634.15$\\
+\ExTwoCGjrBody
 \bottomrule
 \end{tabular}
 \end{table}
@@ -165,23 +160,12 @@ three marginal specifications. Table~\ref{tab:23-summary} summarises the
 sample distribution of each path.
 
 \begin{table}[H]\centering\small
-\caption{Distribution of estimated dynamic correlations across $T=1827$ days.}
+\caption{Distribution of estimated dynamic correlations across $T=\ExTwoT$ days.}
 \label{tab:23-summary}
 \begin{tabular}{llrrrr}
 \toprule
 Pair & Margin & Mean & Std & Min & Max\\\midrule
-\multirow{3}{*}{BTC--ETH}
- & EDF      & $0.8333$ & $0.0538$ & $0.6857$ & $0.9248$\\
- & GARCH-N  & $0.8200$ & $0.0700$ & $0.5129$ & $0.9746$\\
- & GJR-N    & $0.8148$ & $0.0751$ & $0.4887$ & $0.9731$\\\midrule
-\multirow{3}{*}{BTC--ADA}
- & EDF      & $0.7187$ & $0.0917$ & $0.4114$ & $0.8697$\\
- & GARCH-N  & $0.7012$ & $0.1051$ & $0.1564$ & $0.9751$\\
- & GJR-N    & $0.6962$ & $0.1132$ & $0.1207$ & $0.9761$\\\midrule
-\multirow{3}{*}{ETH--ADA}
- & EDF      & $0.7511$ & $0.0779$ & $0.4928$ & $0.8839$\\
- & GARCH-N  & $0.7410$ & $0.0977$ & $0.3218$ & $0.9706$\\
- & GJR-N    & $0.7388$ & $0.1042$ & $0.2796$ & $0.9692$\\
+\ExTwoCompareBody
 \bottomrule
 \end{tabular}
 \end{table}
@@ -196,16 +180,16 @@ Pair & Margin & Mean & Std & Min & Max\\\midrule
 The three series share the same pattern, correlations rise
 during shocks as the COVID-19 shock (March 2020). Quantitatively, EDF
 produces the smoothest path, while GARCH/GJR capture sharper short-run drops in
-dependence. The $\hat a+\hat b$ estimate falls from $0.9999$ (EDF) to $\approx
-0.96$ once the marginal variance is filtered.
+dependence. The $\hat a+\hat b$ estimate falls from $\ExTwoAPers$ (EDF) to
+$\ExTwoBPers$ (GARCH) / $\ExTwoCPers$ (GJR) once the marginal variance is filtered.
 
 % ---------------------------------------------------------------
 \subsection{2.4 -- DCC under a Student-$t$ copula (EDF margins)}
 % ---------------------------------------------------------------
 
 We now jointly estimate $(a,b,\nu)$ in \eqref{eq:dcc-LL-t}. The estimates are
-$\hat a=0.039216$, $\hat b=0.937845$, $\hat\nu=4.3936$, $\ln L=2093.03$. The
-LL gain over the Gaussian-EDF specification is $2093.03-1954.19=138.84$,
+$\hat a=\ExTwoDA$, $\hat b=\ExTwoDB$, $\hat\nu=\ExTwoDNu$, $\ln L=\ExTwoDLL$.
+The LL gain over the Gaussian-EDF specification is $\ExTwoDLLGain$,
 overwhelming evidence that the joint tail of the three crypto returns is
 heavier than Gaussian and well captured by a $t$-copula with around four
 degrees of freedom. Figure~\ref{fig:24} reports the dynamic correlations.
@@ -213,10 +197,10 @@ degrees of freedom. Figure~\ref{fig:24} reports the dynamic correlations.
 \begin{figure}[H]\centering
 \includegraphics[width=0.85\linewidth]{fig_2_4_dcc_t.png}
 \caption{Dynamic correlations under DCC-$t$ copula with EDF margins
-($\hat\nu=4.39$).}\label{fig:24}
+($\hat\nu=\ExTwoDNu$).}\label{fig:24}
 \end{figure}
 
-\paragraph{Intuition for $\hat\nu\approx 4.4$.}
+\paragraph{Intuition for a small $\hat\nu$.}
 A finite $\nu$ is the device by which the Student-$t$ copula introduces
 \emph{tail dependence} (absent in the Gaussian copula). With three crypto
 assets sharing common shocks during stress periods, $\hat\nu$ is pushed

@@ -72,8 +72,15 @@ PS2/
 │   ├── plotting.py          # Grouped bar chart of empirical failure rates
 │   └── main.py              # Orchestrator: runs 5
 ├── figures/                 # Output directory for generated plots
+├── report_utils.py          # TexWriter + number formatters used by all main.py emitters
 └── report/                  # LaTeX write-up
     ├── main.tex             # Master document (preamble, intro, conclusions)
+    ├── generated/           # Auto-generated numeric macros consumed by sections/
+    │   ├── ex1.tex          # \ExOne... macros (dependence/portfolio/IFM results)
+    │   ├── ex2.tex          # \ExTwo... macros (descriptives, DCC estimates)
+    │   ├── ex3.tex          # \ExThree... macros (NM quantile table)
+    │   ├── ex4.tex          # \ExFour... macros (ATM option-portfolio table)
+    │   └── ex5.tex          # \ExFive... macros (breach rates, fitted params)
     └── sections/
         ├── exercise1.tex    # Copula simulation, IFM/CML estimation
         ├── exercise2.tex    # GARCH/GJR + DCC on crypto returns
@@ -96,6 +103,18 @@ pdflatex main.tex      # run twice for cross-references
 eq 31 (Gaussian copula LL), eq 38 (t-copula LL), eqs 67/71 (GARCH/GJR),
 eqs 68/69 (DCC dynamics), eqs 72/76 (DCC Gaussian/t LL), eqs 4–5 (CC/PP
 returns), eq 11 (Kupiec UC) — see <code>changelog.md</code> for the full mapping.</p>
+
+<h3>1.bis.1 Dynamic numeric content</h3>
+<p>Every number printed in the PDF is populated at build time from the Python
+results — nothing is hardcoded in the <code>.tex</code> sources. Each
+<code>exerciseN/main.py</code> ends by writing
+<code>report/generated/exN.tex</code> via the <code>TexWriter</code> helper in
+<code>report_utils.py</code>, and <code>report/main.tex</code> loads all five
+files in its preamble. The <code>sections/exerciseN.tex</code> files refer to
+those macros (<code>\ExOne…</code>, <code>\ExTwo…</code>, … for scalars and
+<code>\Ex…Body</code> for tabular row blocks), so re-running
+<code>python main.py</code> refreshes every figure, every table, and every
+inline statistic consistently.</p>
 
 
 <h2>2. Installation &amp; Usage</h2>

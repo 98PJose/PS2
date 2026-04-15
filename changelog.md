@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.1.0] - 2026-04-15
+
+### Added
+- `report_utils.py`: Shared LaTeX-emission helpers. `TexWriter` accumulates `\newcommand` macros (scalar `cmd`) and multi-line tabular bodies (`body`) and saves them atomically; `fnum`, `fint`, `fpct`, `fsig` format numbers for math-mode insertion (NaN/inf handled); `generated_dir(cfg)` resolves the output folder from `config.json` (`output.tex_generated_dir`, default `report/generated`).
+- `report/generated/ex{1..5}.tex`: Auto-generated macro files consumed by the LaTeX report. Regenerated on every `python main.py` run from each `exerciseN/main.py`.
+
+### Changed
+- `exercise1/main.py`, `exercise2/main.py`, `exercise3/main.py`, `exercise4/main.py`, `exercise5/main.py`: Every orchestrator now emits its numeric results through a `TexWriter` at the end of `main()`. The emitted macros cover dependence measures, portfolio statistics, IFM/CML estimates (Ex1), descriptive table, DCC a/b/persistence/LL for EDF/GARCH/GJR, t-copula DCC (Ex2), NM-quantile table (Ex3), ATM option-portfolio table (Ex4), breach-rate + fitted-parameter tables (Ex5).
+- `report/sections/exercise{1..5}.tex`: All previously hardcoded numbers replaced by `\ExOne…`, `\ExTwo…`, `\ExThree…`, `\ExFour…`, `\ExFive…` macros (scalars and `*Body` tabular rows). Tables now reference a body macro + the toprule/midrule/bottomrule skeleton, so the .tex sources carry no numeric drift from the Python outputs.
+- `report/main.tex`: Added `\input{generated/ex{1..5}.tex}` in the preamble so every macro is defined before `\begin{document}`.
+
+### Fixed
+- **Numeric drift between code and LaTeX**: prior to this refactor, sample statistics, parameter estimates, and table entries were hand-copied into the `.tex` sources. They are now sourced directly from Python at build time — a single `python main.py` regenerates `report/generated/` and recompiles the PDF, guaranteeing the report always prints the values produced by the code.
+
 ## [6.0.0] - 2026-04-15
 
 ### Added

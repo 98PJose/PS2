@@ -30,6 +30,7 @@ from .copulas import sample_shocks
 from .option_portfolio import portfolio_returns_over_strikes, simulate_terminal_prices
 from .plotting import plot_strategy_statistics
 from .stats import strike_stats
+from report_utils import TexWriter, fnum, generated_dir
 
 
 def load_config():
@@ -77,7 +78,7 @@ def run_scenario(name, title_suffix, copula_kind, copula_params, cfg, rng):
         figures_dir=figures_dir,
         dpi=cfg["output"]["dpi"])
 
-    return stats_by_strategy
+    return stats_by_strategy, atm_idx
 
 
 def main():
@@ -89,42 +90,65 @@ def main():
     print("Exercise 4 — Option-based portfolios under alternative copulas")
     print("=" * 70)
 
-    # 4.1 Gaussian, rho from reference MATLAB (0.9)
-    run_scenario(
-        name="4_1_gaussian_high",
-        title_suffix=f"Gaussian copula, rho = {ex4['part_4_1']['rho']}",
-        copula_kind="gaussian",
-        copula_params={"rho": ex4["part_4_1"]["rho"]},
-        cfg=cfg,
-        rng=np.random.default_rng(seeds["part_4_1"]))
+    # All four scenarios, keeping hold of the ATM statistics for the report.
+    scenarios = [
+        ("4_1_gaussian_high",
+         f"Gaussian copula, $\\rho={ex4['part_4_1']['rho']}$",
+         "gaussian", {"rho": ex4["part_4_1"]["rho"]},
+         seeds["part_4_1"]),
+        ("4_2_gaussian_low",
+         f"Gaussian copula, $\\rho={ex4['part_4_2']['rho']}$",
+         "gaussian", {"rho": ex4["part_4_2"]["rho"]},
+         seeds["part_4_2"]),
+        ("4_3_student_t",
+         (f"Student-$t$ copula, $\\rho={ex4['part_4_3']['rho']}$, "
+          f"$\\nu={ex4['part_4_3']['nu']}$"),
+         "t", {"rho": ex4["part_4_3"]["rho"], "nu": ex4["part_4_3"]["nu"]},
+         seeds["part_4_3"]),
+        ("4_4_clayton",
+         f"Clayton copula, $\\theta={ex4['part_4_4']['theta']}$",
+         "clayton", {"theta": ex4["part_4_4"]["theta"]},
+         seeds["part_4_4"]),
+    ]
 
-    # 4.2 Gaussian, rho = 0.3
-    run_scenario(
-        name="4_2_gaussian_low",
-        title_suffix=f"Gaussian copula, rho = {ex4['part_4_2']['rho']}",
-        copula_kind="gaussian",
-        copula_params={"rho": ex4["part_4_2"]["rho"]},
-        cfg=cfg,
-        rng=np.random.default_rng(seeds["part_4_2"]))
+    atm_tables = {}
+    for name, title, kind, params, seed in scenarios:
+        stats_by_strategy, atm_idx = run_scenario(
+            name=name, title_suffix=title,
+            copula_kind=kind, copula_params=params,
+            cfg=cfg, rng=np.random.default_rng(seed))
+        atm_tables[name] = (title, stats_by_strategy, atm_idx)
 
-    # 4.3 Student t, rho = 0.3, nu = 5
-    run_scenario(
-        name="4_3_student_t",
-        title_suffix=(f"Student t copula, rho = {ex4['part_4_3']['rho']}, "
-                      f"nu = {ex4['part_4_3']['nu']}"),
-        copula_kind="t",
-        copula_params={"rho": ex4["part_4_3"]["rho"], "nu": ex4["part_4_3"]["nu"]},
-        cfg=cfg,
-        rng=np.random.default_rng(seeds["part_4_3"]))
-
-    # 4.4 Clayton, theta = 10
-    run_scenario(
-        name="4_4_clayton",
-        title_suffix=f"Clayton copula, theta = {ex4['part_4_4']['theta']}",
-        copula_kind="clayton",
-        copula_params={"theta": ex4["part_4_4"]["theta"]},
-        cfg=cfg,
-        rng=np.random.default_rng(seeds["part_4_4"]))
+    # ------------------------------------------------------------------
+    # Emit LaTeX-consumable results
+    # ------------------------------------------------------------------
+    tex = TexWriter("Exercise 4 — auto-generated results")
+    # Raw number (no $...$) so ``$N=\ExFourN$'' composes without nested math.
+    tex.cmd("ExFourN",
+            f"{ex4['N']:,}".replace(",", r"\,"))
+    rows = []
+    labels = {"4_1_gaussian_high": "4.1 Gaussian $\\rho=0.9$",
+              "4_2_gaussian_low":  "4.2 Gaussian $\\rho=0.3$",
+              "4_3_student_t":     "4.3 $t$-copula $\\rho=0.3,\\nu=5$",
+              "4_4_clayton":       "4.4 Clayton $\\theta=10$"}
+    for key, (_title, stats_by_strategy, atm_idx) in atm_tables.items():
+        first = True
+        for s in ("cc", "cc2", "pp", "pp2"):
+            st = stats_by_strategy[s]
+            lead = (f"\\multirow{{4}}{{*}}{{{labels[key]}}} " if first else " ")
+            first = False
+            rows.append(
+                f"{lead}& \\code{{{s}}} "
+                f"& {fnum(st['mean'][atm_idx])} "
+                f"& {fnum(st['std'][atm_idx])} "
+                f"& {fnum(st['skew'][atm_idx])} "
+                f"& {fnum(st['kurt'][atm_idx])}\\\\")
+        if key != list(atm_tables)[-1]:
+            rows.append(r"\midrule")
+    tex.body("ExFourAtmBody", rows)
+    out_path = os.path.join(generated_dir(cfg), "ex4.tex")
+    tex.save(out_path)
+    print(f"\n[exercise4] LaTeX macros saved: {out_path}")
 
 
 if __name__ == "__main__":

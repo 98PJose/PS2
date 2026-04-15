@@ -22,6 +22,7 @@ import numpy as np
 
 from .plotting import plot_failure_rates
 from .simulation import ALPHAS, MODELS, run_scenario
+from report_utils import TexWriter, fnum, generated_dir
 
 
 def load_config():
@@ -121,6 +122,61 @@ def main():
 
     plot_failure_rates(results, alphas=ALPHAS, figures_dir=figures_dir,
                        dpi=cfg["output"]["dpi"])
+
+    # ------------------------------------------------------------------
+    # Emit LaTeX-consumable results
+    # ------------------------------------------------------------------
+    def _rate_cell(kp):
+        rate = 100.0 * kp["hit_rate"]
+        if kp["reject_99"]:
+            mark = r"^{**}"
+        elif kp["reject_95"]:
+            mark = r"^{*}"
+        else:
+            mark = ""
+        return f"${rate:.2f}{mark}$"
+
+    tex = TexWriter("Exercise 5 — auto-generated results")
+    # Raw numbers (no $...$) so ``$R=\ExFiveNrep$'' composes without nested math.
+    tex.cmd("ExFiveNobs",  f"{ex5['n_obs']:,}".replace(",", r"\,"))
+    tex.cmd("ExFiveNsim",  f"{ex5['n_sim']:,}".replace(",", r"\,"))
+    tex.cmd("ExFiveNrep",  f"{ex5['n_rep']:,}".replace(",", r"\,"))
+
+    # Two breach-rate tables (95% then 99%)
+    alphas_sorted = sorted(ALPHAS, reverse=True)
+    for alpha, tag in zip(alphas_sorted, ("NinetyFive", "NinetyNine")):
+        rows = []
+        for r in results:
+            cells = [f"${r['theta_true']}$"]
+            for m in MODELS:
+                cells.append(_rate_cell(r["kupiec"][(m, alpha)]))
+            cells.append(f"${100*alpha:.2f}$")
+            rows.append(" & ".join(cells) + r"\\")
+        tex.body(f"ExFiveBreach{tag}Body", rows)
+
+    # Average-fits table
+    fit_rows = []
+    for r in results:
+        g_rhos = [f["rho"] for f in r["fits"]["gaussian"]]
+        t_rhos = [f["rho"] for f in r["fits"]["t"]]
+        t_nus  = [f["nu"]  for f in r["fits"]["t"]]
+        c_ths  = [f["theta"] for f in r["fits"]["clayton"]]
+        nu_mean = float(np.mean(t_nus))
+        # Display very large nu estimates as infinity (t-copula degenerating
+        # to Gaussian at low Clayton dependence).
+        nu_cell = r"$\infty$" if nu_mean > 100.0 else fnum(nu_mean, 2)
+        row = (
+            f"${r['theta_true']}$ "
+            f"& {fnum(np.mean(g_rhos))} & {fnum(np.std(g_rhos))} "
+            f"& {fnum(np.mean(t_rhos))} & {nu_cell} "
+            f"& {fnum(np.mean(c_ths))} & {fnum(np.std(c_ths))}\\\\"
+        )
+        fit_rows.append(row)
+    tex.body("ExFiveFitsBody", fit_rows)
+
+    out_path = os.path.join(generated_dir(cfg), "ex5.tex")
+    tex.save(out_path)
+    print(f"\n[exercise5] LaTeX macros saved: {out_path}")
 
 
 if __name__ == "__main__":

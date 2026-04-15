@@ -18,7 +18,7 @@ S_{iT}=S_{i0}\exp\!\Bigl(\bigl(\mu-\tfrac12\sigma^2\bigr)T+\sigma\sqrt{T}\,Z_i\B
 \]
 where $S_{10}=S_{20}=100$, $r=0.03$, $\mu=0.08$, $\sigma=0.2$, $T=1$, and
 $(Z_1,Z_2)$ has $\mathcal{N}(0,1)$ marginals coupled by one of four copulas
-(scenarios 4.1--4.4 below). $N=10^5$ paths and a strike grid
+(scenarios 4.1--4.4 below). $N=\ExFourN$ paths and a strike grid
 $K\in\{85,86,\ldots,115\}$.
 
 \paragraph{Black--Scholes prices (port of \file{BS.m}).}
@@ -66,30 +66,11 @@ strategy under the four copula scenarios. The full strike-curve plots are in
 Figures~\ref{fig:4-1}--\ref{fig:4-4}.
 
 \begin{table}[H]\centering\footnotesize
-\caption{Strategy statistics at $K=100$, $N=10^5$ Monte-Carlo paths.}\label{tab:4-atm}
+\caption{Strategy statistics at $K=100$, $N=\ExFourN$ Monte-Carlo paths.}\label{tab:4-atm}
 \begin{tabular}{llrrrr}
 \toprule
 Scenario & Strategy & Mean & Std & Skew & Kurt\\\midrule
-\multirow{4}{*}{4.1 Gaussian $\rho=0.9$}
- & cc   & $0.0506$ & $0.0916$ & $-1.8660$ & $5.9463$\\
- & cc2  & $0.0504$ & $0.1315$ & $-0.0764$ & $3.1865$\\
- & pp   & $0.0623$ & $0.1593$ & $\phantom{-}1.6231$ & $6.0103$\\
- & pp2  & $0.0621$ & $0.1656$ & $\phantom{-}1.2713$ & $5.2876$\\\midrule
-\multirow{4}{*}{4.2 Gaussian $\rho=0.3$}
- & cc   & $0.0507$ & $0.0920$ & $-1.8890$ & $6.0673$\\
- & cc2  & $0.0519$ & $0.2638$ & $\phantom{-}0.1036$ & $3.7720$\\
- & pp   & $0.0622$ & $0.1592$ & $\phantom{-}1.6317$ & $6.0943$\\
- & pp2  & $0.0632$ & $0.2028$ & $\phantom{-}0.5806$ & $3.7156$\\\midrule
-\multirow{4}{*}{4.3 $t$-copula $\rho=0.3,\nu=5$}
- & cc   & $0.0511$ & $0.0913$ & $-1.8863$ & $6.0419$\\
- & cc2  & $0.0507$ & $0.2608$ & $-0.0779$ & $4.3228$\\
- & pp   & $0.0623$ & $0.1585$ & $\phantom{-}1.6201$ & $6.0619$\\
- & pp2  & $0.0620$ & $0.2033$ & $\phantom{-}0.7074$ & $4.1131$\\\midrule
-\multirow{4}{*}{4.4 Clayton $\theta=10$}
- & cc   & $0.0512$ & $0.0912$ & $-1.8945$ & $6.0986$\\
- & cc2  & $0.0516$ & $0.1425$ & $\phantom{-}0.1637$ & $6.9970$\\
- & pp   & $0.0625$ & $0.1586$ & $\phantom{-}1.6065$ & $5.9304$\\
- & pp2  & $0.0628$ & $0.1596$ & $\phantom{-}1.5584$ & $5.7335$\\
+\ExFourAtmBody
 \bottomrule
 \end{tabular}
 \end{table}
@@ -125,22 +106,21 @@ The cross-asset strategies \code{cc2} and \code{pp2} react sharply to the
 copula choice:
 
 \begin{itemize}\setlength\itemsep{0pt}
-\item \emph{Gaussian, high $\rho=0.9$}: \code{cc2} std $=0.13$ -- the held
-      asset 2 is almost a copy of asset 1 so the option hedge is almost
-      perfect, leaving roughly the same risk profile as \code{cc}.
-\item \emph{Gaussian, low $\rho=0.3$}: \code{cc2} std jumps to $0.26$
+\item \emph{Gaussian, high $\rho=0.9$}: when the held asset 2 is almost a
+      copy of asset 1 the option hedge is almost perfect, leaving roughly the
+      same risk profile as \code{cc}.
+\item \emph{Gaussian, low $\rho=0.3$}: \code{cc2} std jumps
       because the option payoff (function of $S_{1T}$) decouples from the held
       asset $S_{2T}$.
 \item \emph{Student $t$ at the same $\rho=0.3$}: similar std to the Gaussian
-      case, but \emph{kurtosis rises from $3.77$ to $4.32$} thanks to the
+      case, but kurtosis rises thanks to the
       tail dependence injected by $\nu=5$. The protective put inherits a
-      heavier upper tail (\code{pp2} kurt $4.11$ vs $3.72$).
+      heavier upper tail.
 \item \emph{Clayton $\theta=10$}: lower-tail dependence collapses
-      \code{cc2} std back to $0.14$ -- when $S_{1T}$ is small, $S_{2T}$ is
-      also small with high probability, so asset 2 plus a long-call
-      position behaves like a single-asset covered call. Skew flips
-      from $-1.87$ (single asset) to $+0.16$ because the call's
-      truncation now no longer captures the asset 2 upside symmetrically.
+      \code{cc2} std back to the single-asset level -- when $S_{1T}$ is small,
+      $S_{2T}$ is also small with high probability. Skew flips sign because
+      the call's truncation no longer captures the asset-2 upside
+      symmetrically.
 \end{itemize}
-The numbers replicate the slide-pages 16--19 exactly, validating both the
+The numbers replicate the slide-pages 16--19, validating both the
 Black--Scholes routine and the copula simulators.

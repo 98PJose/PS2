@@ -28,6 +28,18 @@ from exercise1.portfolio import compute_portfolio_returns, compute_stats
 from exercise1.plotting import (
     plot_copula_scatter, plot_portfolio_histograms, plot_mixture_scatter
 )
+from report_utils import TexWriter, fnum, generated_dir
+
+
+# Short LaTeX labels for each copula (used in the generated tables).
+_COP_LABELS = [
+    r"Clayton $\theta=10$",
+    r"Surv.\ Clayton $\theta=5$",
+    r"Gaussian $\rho=-0.7$",
+    r"Student-$t$ $\rho=-0.7,\nu=5$",
+    r"FGM $\lambda=-0.5$",
+    r"FGM $\lambda=0$",
+]
 
 
 def load_config(path="config.json"):
@@ -95,9 +107,21 @@ def run_1a(v1, v2, copula_registry, fig_dir, dpi):
                      .replace("$\\nu$", "nu").replace("$\\lambda$", "lam")
         print(f"{plain:<45}{pr:>11.4f}{sr:>11.4f}{kt:>11.4f}")
 
+    # Collect for the report
+    rows = []
+    dep_values = []
+    for i, (name, (u1, u2)) in enumerate(draws.items()):
+        pr = pearsonr(u1, u2)[0]
+        sr = spearmanr(u1, u2)[0]
+        kt = kendalltau(u1, u2)[0]
+        dep_values.append((pr, sr, kt))
+        rows.append(
+            f"{_COP_LABELS[i]} & {fnum(pr)} & {fnum(sr)} & {fnum(kt)}\\\\"
+        )
+
     path = plot_copula_scatter(draws, fig_dir, dpi)
     print(f"\n  Figure saved: {path}")
-    return draws
+    return draws, rows, dep_values
 
 
 # ─────────────────────────────────────────────────────────────
@@ -147,9 +171,21 @@ def run_1b(draws, cfg, fig_dir, dpi):
     for i, s in enumerate(short):
         print(f"  {s:>8}" + "".join(f"{corr_mat[i, j]:>9.4f}" for j in range(len(short))))
 
+    # Build report rows for the 1.b portfolio table
+    rows = []
+    for i, (name, (u1, u2)) in enumerate(draws.items()):
+        rp = port_returns[name]
+        stats = compute_stats(rp, var_levels)
+        cells = [_COP_LABELS[i],
+                 fnum(stats['mean']), fnum(stats['std']),
+                 fnum(stats['skewness']), fnum(stats['kurtosis'])]
+        for q in var_levels:
+            cells.append(fnum(stats['var'][q]))
+        rows.append(" & ".join(cells) + "\\\\")
+
     path = plot_portfolio_histograms(port_returns, fig_dir, dpi)
     print(f"\n  Figure saved: {path}")
-    return port_returns
+    return port_returns, rows
 
 
 # ─────────────────────────────────────────────────────────────
@@ -296,10 +332,57 @@ def main():
     copula_registry = build_copula_registry(cfg)
 
     # Run all parts
-    draws = run_1a(v1, v2, copula_registry, out_cfg["figures_dir"], out_cfg["dpi"])
-    run_1b(draws, cfg, out_cfg["figures_dir"], out_cfg["dpi"])
-    run_1c(draws, cfg)
-    run_1d(cfg, out_cfg["figures_dir"], out_cfg["dpi"])
+    draws, dep_rows, dep_values = run_1a(v1, v2, copula_registry,
+                                          out_cfg["figures_dir"], out_cfg["dpi"])
+    _, port_rows = run_1b(draws, cfg, out_cfg["figures_dir"], out_cfg["dpi"])
+    res_1c = run_1c(draws, cfg)
+    res_1d_t, res_1d_g = run_1d(cfg, out_cfg["figures_dir"], out_cfg["dpi"])
+
+    # ------------------------------------------------------------------
+    # Emit LaTeX-consumable results
+    # ------------------------------------------------------------------
+    # Recover 1.d dependence measures for the report (seed-reproducible)
+    mix = cfg["mixture"]; sim_cfg = cfg["simulation"]
+    np.random.seed(sim_cfg["seed_mixture"])
+    Vm = np.random.rand(sim_cfg["Ns"], 2)
+    vm1 = np.clip(Vm[:, 0], sim_cfg["eps"], 1 - sim_cfg["eps"])
+    vm2 = np.clip(Vm[:, 1], sim_cfg["eps"], 1 - sim_cfg["eps"])
+    indicator = np.random.rand(sim_cfg["Ns"]) < mix["prob_clayton"]
+    u1m, u2m = sim_mixture(
+        vm1, vm2, indicator,
+        sim_clayton, {"theta": mix["clayton_theta"]},
+        sim_surv_clayton, {"theta": mix["surv_clayton_theta"]})
+    mix_pearson = pearsonr(u1m, u2m)[0]
+    mix_spearman = spearmanr(u1m, u2m)[0]
+    mix_kendall = kendalltau(u1m, u2m)[0]
+
+    tex = TexWriter("Exercise 1 — auto-generated results")
+    # Raw number (no $...$) so ``$N=\ExOneNs$'' composes without nested math.
+    tex.cmd("ExOneNs", f"{sim_cfg['Ns']:,}".replace(",", r"\,"))
+    tex.body("ExOneDependenceBody", dep_rows)
+    tex.body("ExOnePortfolioBody", port_rows)
+
+    # 1.c IFM Gaussian
+    tex.cmd("ExOneICRhoTrue",
+            fnum(cfg["copulas"]["gaussian"]["rho"], d=1))
+    tex.cmd("ExOneICRhoHat",  fnum(res_1c["rho"], d=6))
+    tex.cmd("ExOneICLogLik",  fnum(res_1c["log_likelihood"], d=2))
+
+    # 1.d mixture dependence and t-copula / Gaussian IFM
+    tex.cmd("ExOneIDMixPearson",  fnum(mix_pearson))
+    tex.cmd("ExOneIDMixSpearman", fnum(mix_spearman))
+    tex.cmd("ExOneIDMixKendall",  fnum(mix_kendall))
+    tex.cmd("ExOneIDTRhoHat",   fnum(res_1d_t["rho"], d=6))
+    tex.cmd("ExOneIDTNuHat",    fnum(res_1d_t["nu"], d=4))
+    tex.cmd("ExOneIDTLogLik",   fnum(res_1d_t["log_likelihood"], d=2))
+    tex.cmd("ExOneIDGRhoHat",   fnum(res_1d_g["rho"], d=6))
+    tex.cmd("ExOneIDGLogLik",   fnum(res_1d_g["log_likelihood"], d=2))
+    tex.cmd("ExOneIDLLGain",
+            fnum(res_1d_t["log_likelihood"] - res_1d_g["log_likelihood"], d=2))
+
+    out_path = os.path.join(generated_dir(cfg), "ex1.tex")
+    tex.save(out_path)
+    print(f"\n  LaTeX macros saved: {out_path}")
 
     print(f"\n{'=' * 78}")
     print(f"Exercise 1 completed. Figures saved in '{out_cfg['figures_dir']}/'.")

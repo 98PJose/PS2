@@ -22,6 +22,7 @@ from scipy.stats import norm
 
 from .nm_copula import nm_conditional_cdf, nm_quantile_curve
 from .plotting import plot_quantile_curves
+from report_utils import TexWriter, fnum, generated_dir
 
 
 def load_config():
@@ -85,6 +86,28 @@ def run_3(cfg):
             r1 = float(norm.ppf(curves[q][u1_idx]))
             row += f"  {r1: .4f}"
         print(row)
+
+    # ------------------------------------------------------------------
+    # Emit LaTeX-consumable results
+    # ------------------------------------------------------------------
+    rows = []
+    for u2 in check_u2:
+        cells = [f"${u2:.2f}$"]
+        for q in q_values:
+            u1_idx = int(np.round((u2 - eps) / (1.0 - 2 * eps) * (n_grid - 1)))
+            cells.append(fnum(curves[q][u1_idx]))
+        rows.append(" & ".join(cells) + r"\\")
+
+    tex = TexWriter("Exercise 3 — auto-generated results")
+    tex.cmd("ExThreePi",   fnum(pi, 1))
+    tex.cmd("ExThreeRhoA", fnum(rho1, 1))
+    tex.cmd("ExThreeRhoB", fnum(rho2, 1))
+    tex.body("ExThreeQuantileBody", rows)
+    header = "$u_2$ & " + " & ".join(f"$q={q}$" for q in q_values) + r"\\"
+    tex.cmd("ExThreeQuantileHeader", header)
+    out_path = os.path.join(generated_dir(cfg), "ex3.tex")
+    tex.save(out_path)
+    print(f"\n[exercise3] LaTeX macros saved: {out_path}")
 
 
 def main():
