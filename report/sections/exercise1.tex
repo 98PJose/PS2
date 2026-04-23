@@ -6,7 +6,7 @@
 We work with six bivariate copulas (\textsc{Clayton} $\theta=10$, \textsc{Survival
 Clayton} $\theta=5$, \textsc{Gaussian} $\rho=-0.7$, \textsc{Student-$t$}
 $\rho=-0.7,\nu=5$, \textsc{FGM} $\lambda=-0.5$ and \textsc{FGM} $\lambda=0$).
-The implementation lives in \file{exercise1/} and is driven by
+The code is driven by
 \file{exercise1/main.py}. Throughout, $V_1,V_2$ denote independent
 $\mathcal{U}(0,1)$ draws, while $(U_1,U_2)$
 is the resulting copula sample.
@@ -20,9 +20,9 @@ Given a bivariate copula $C$, define the partial derivative
 C_2(u_1\given u_2)\;=\;\Pr(U_1\le u_1\mid U_2=u_2)\;=\;\frac{\partial}{\partial u_2}\,C(u_1,u_2).
 \]
 By construction $C_2(\cdot\given u_2)$ is a CDF on $(0,1)$. The
-\emph{conditional inversion algorithm} produces a sample from $C$ in two steps:
+\emph{conditional inversion algorithm} produces a sample from $C$ with this steps:
 \[
-\boxed{\;U_2\sim\mathcal{U}(0,1),\qquad U_1\;=\;C_2^{-1}(V_1\given U_2),\quad V_1\sim\mathcal{U}(0,1).\;}
+\boxed{\;U_2\sim\mathcal{U}(0,1),\qquad U_1\;=\;C_2^{-1}(V_1\given U_2)=V_1,\quad V_1\sim\mathcal{U}(0,1).\;}
 \]
 This is what every routine in \file{exercise1/copula\_sim.py} implements.
 
@@ -52,7 +52,7 @@ With $X_i=\Phi^{-1}(U_i)$,
 X_1\given X_2=x_2\;\sim\;\mathcal{N}\!\bigl(\rho x_2,\;1-\rho^2\bigr),
 \]
 so the conditional CDF is $C^G(u_1\given u_2)=
-\Phi\!\bigl((\Phi^{-1}u_1-\rho\,\Phi^{-1}u_2)/\sqrt{1-\rho^2}\bigr)$
+\Phi\!\bigl((\Phi^{-1}(u_1)-\rho\,\Phi^{-1}(u_2)/\sqrt{1-\rho^2}\bigr)$
 and the inverse gives
 \begin{equation}\label{eq:gauss-sim}
 U_1=\Phi\!\bigl(\rho\,\Phi^{-1}(u_2)+\sqrt{1-\rho^2}\,\Phi^{-1}(v_1)\bigr).
@@ -94,7 +94,7 @@ Numerical results (Table~\ref{tab:1a}) and scatter plots
 \item Clayton has lower-tail dependence.
 \item Survival Clayton has upper-tail dependence.
 \item Gaussian and Student-$t$ at $\rho=-0.7$ produce the elliptical dependence;
-      $t$ adds heavier joint extremes.
+      $t$ has heavier tails.
 \item FGM is essentially close to independence: its dependence parameter
       is bounded ($|\tau|\le 2/9$).
 \end{itemize}
@@ -125,8 +125,7 @@ is $\tau=(2/\pi)\arcsin\rho\approx -0.4936$, which the simulation also recovers.
 
 We build the portfolio $r_p=0.4\,r_1+0.6\,r_2$ where
 $r_1=\Phi^{-1}(U_1)\sim\mathcal{N}(0,1)$ and
-$r_2=t_6^{-1}(U_2)\sim t_6$. The marginals enter only through their quantile
-functions; the copula governs the joint behaviour. Statistics are reported
+$r_2=t_6^{-1}(U_2)\sim t_6$. Statistics are reported
 in Table~\ref{tab:1b}, and a direct comparison of histograms vs.\ a Normal
 overlay (same $\mu,\sigma$) is shown in Figure~\ref{fig:1b}.
 
@@ -171,8 +170,6 @@ Given an i.i.d. sample $\{(r_{1t},r_{2t})\}_{t=1}^T$ the Inference-Functions-for
 \end{enumerate}
 When $\hat F_i$ is the empirical CDF $\hat F_i(x)=\frac{1}{T+1}\sum_t \indic\{r_{it}\le x\}$
 (``EDF'' margin) we obtain the \emph{Canonical Maximum Likelihood} (CML) variant.
-The shift from $T$ to $T+1$ avoids values that would blow up
-$\Phi^{-1}(\hat u)$.
 
 \paragraph{Gaussian copula log-likelihood (slides eq.\,31).}
 Let $\eta_t=(\Phi^{-1}\hat u_{1t},\Phi^{-1}\hat u_{2t})^\top$ and
@@ -189,7 +186,7 @@ We maximise $\sum_t \ln c^G$ in $\rho$ by Brent's method on $(-0.999,0.999)$
 
 \paragraph{Result.} On the Gaussian-copula sample with true $\rho=\ExOneICRhoTrue$ we obtain
 $\hat\rho=\ExOneICRhoHat$, $\ln L=\ExOneICLogLik$, with successful convergence. The
-estimator recovers the truth to three decimals on $\ExOneNs$ observations.
+estimator recovers the true value up to three decimals on $\ExOneNs$ observations.
 
 % ---------------------------------------------------------------
 \subsection{1.d -- Mixture DGP and t-copula IFM estimation}
@@ -227,6 +224,4 @@ $Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
 $\hat\nu=\ExOneIDTNuHat$, $\ln L=\ExOneIDTLogLik$. The small $\hat\nu$ is the
 t-copula's only way to mimic the heavy joint tails of the Clayton mixture ---
 a Gaussian fit on the same data gives $\hat\rho=\ExOneIDGRhoHat$ and
-$\ln L=\ExOneIDGLogLik$, a log-likelihood gap of $\ExOneIDLLGain$. This is a
-textbook example of how IFM identifies tail dependence by inflating the
-t-copula degrees of freedom downward.
+$\ln L=\ExOneIDGLogLik$, a log-likelihood gap of $\ExOneIDLLGain$. 

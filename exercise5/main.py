@@ -138,7 +138,7 @@ def main():
 
     tex = TexWriter("Exercise 5 — auto-generated results")
     # Raw numbers (no $...$) so ``$R=\ExFiveNrep$'' composes without nested math.
-    tex.cmd("ExFiveNobs",  f"{ex5['n_obs']:,}".replace(",", r"\,"))
+    tex.cmd("ExFiveNobs",  f"{ex5['n_obs'] - 1:,}".replace(",", r"\,"))
     tex.cmd("ExFiveNsim",  f"{ex5['n_sim']:,}".replace(",", r"\,"))
     tex.cmd("ExFiveNrep",  f"{ex5['n_rep']:,}".replace(",", r"\,"))
 

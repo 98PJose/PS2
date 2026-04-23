@@ -3,7 +3,7 @@
 % =====================================================================
 
 We work with the daily log-returns of three crypto assets
-(BTC, ETH, ADA) loaded from \file{crypto.xlsx}. The sample spans
+(BTC, ETH, ADA). The sample spans
 $T=\ExTwoT$ trading days from \ExTwoDateStart{} to \ExTwoDateEnd. The whole
 pipeline is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
 
@@ -27,8 +27,8 @@ $\rho_{\textsc{btc-eth}}=\ExTwoCorrBTCETH$,\quad
 $\rho_{\textsc{btc-ada}}=\ExTwoCorrBTCADA$,\quad
 $\rho_{\textsc{eth-ada}}=\ExTwoCorrETHADA$.
 
-The three series exhibit crypto stylised facts: near-zero mean,
-markedly negative skew (especially BTC and ETH), and a pronounced excess
+The three series show
+negative skew (especially BTC and ETH), and a pronounced excess
 kurtosis (Pearson kurtosis $\gg 3$).
 
 % ---------------------------------------------------------------
@@ -66,9 +66,9 @@ r_{it}/\sqrt{\hat h_{it}}, & \text{(GARCH/GJR margin, 2.2b--c)}.
 \end{cases}
 \]
 
-\paragraph{DCC dynamics (Engle, 2002 -- slides eqs.\,68--69).}
-With $z_t=\hat\eta_t$ (an $n\times 1$ vector of standardised innovations) we
-posit
+\paragraph{DCC dynamics}
+
+With $z_t=\hat\eta_t$ (an $n\times 1$ vector of standardised innovations:
 \begin{align}
 Q_t &=(1-a-b)\,\hat\Omega+a\,z_{t-1}z_{t-1}^\top+b\,Q_{t-1},\quad Q_1=\hat\Omega,\label{eq:dcc-Q}\\
 \Psi_t &=\Lambda_t^{-1/2}\,Q_t\,\Lambda_t^{-1/2},\qquad \Lambda_t=\diag(Q_t),\label{eq:dcc-psi}
@@ -76,13 +76,13 @@ Q_t &=(1-a-b)\,\hat\Omega+a\,z_{t-1}z_{t-1}^\top+b\,Q_{t-1},\quad Q_1=\hat\Omega
 where $\hat\Omega=\frac{1}{T}\sum_t z_tz_t^\top$ and $a,b>0$, $a+b<1$. The
 normalisation in \eqref{eq:dcc-psi} ensures $\Psi_t$ is a correlation matrix.
 
-\paragraph{Gaussian DCC log-likelihood (slides eq.\,72).}
+\paragraph{Gaussian DCC log-likelihood}
 The copula likelihood (margins concentrated out) is
 \begin{equation}\label{eq:dcc-LL-G}
 \ell^G(a,b)=-\tfrac12\sum_{t=1}^{T}\Bigl[\ln|\Psi_t|+\eta_t^\top(\Psi_t^{-1}-I_n)\eta_t\Bigr].
 \end{equation}
 
-\paragraph{Student-$t$ DCC log-likelihood (slides eq.\,76).}
+\paragraph{Student-$t$ DCC log-likelihood}
 With $A(\nu)=\dfrac{\Gamma\!\bigl(\tfrac{\nu+n}{2}\bigr)\,\Gamma\!\bigl(\tfrac{\nu}{2}\bigr)^{n-1}}
 {\Gamma\!\bigl(\tfrac{\nu+1}{2}\bigr)^{n}}$,
 \begin{align}
@@ -201,8 +201,7 @@ degrees of freedom. Figure~\ref{fig:24} reports the dynamic correlations.
 \end{figure}
 
 \paragraph{Intuition for a small $\hat\nu$.}
-A finite $\nu$ is the device by which the Student-$t$ copula introduces
-\emph{tail dependence} (absent in the Gaussian copula). With three crypto
+With three crypto
 assets sharing common shocks during stress periods, $\hat\nu$ is pushed
 toward small values; values in the 4--6 range are typical of equity
 indices, and the crypto evidence here lies just at the lower end of that range.

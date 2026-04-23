@@ -36,8 +36,6 @@ def plot_copula_scatter(draws_dict, output_dir, dpi=150):
     nrows = (n + ncols - 1) // ncols
 
     fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4.5 * nrows))
-    fig.suptitle("1.a) Bivariate dependent U(0,1) draws from copula models",
-                 fontsize=14)
 
     if nrows == 1:
         axes = [axes]
@@ -45,7 +43,7 @@ def plot_copula_scatter(draws_dict, output_dir, dpi=150):
     for idx, (label, (u1, u2)) in enumerate(draws_dict.items()):
         ax = axes[idx // ncols][idx % ncols]
         ax.scatter(u1[::5], u2[::5], s=0.3, alpha=0.2)
-        ax.set(xlabel="$u_1$", ylabel="$u_2$", title=label,
+        ax.set(xlabel="$u_1$", ylabel="$u_2$",
                xlim=(0, 1), ylim=(0, 1))
         ax.set_aspect("equal")
 
@@ -86,8 +84,6 @@ def plot_portfolio_histograms(returns_dict, output_dir, dpi=150):
     nrows = (n + ncols - 1) // ncols
 
     fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4.5 * nrows))
-    fig.suptitle("1.b) Portfolio return histograms with Normal PDF overlay",
-                 fontsize=14)
 
     if nrows == 1:
         axes = [axes]
@@ -99,7 +95,7 @@ def plot_portfolio_histograms(returns_dict, output_dir, dpi=150):
                 color="steelblue", edgecolor="none", label="Simulated")
         xg = np.linspace(mu - 4.5 * sd, mu + 4.5 * sd, 400)
         ax.plot(xg, norm.pdf(xg, mu, sd), "r-", lw=1.5, label="Normal PDF")
-        ax.set(xlabel="$r_p$", ylabel="Density", title=label)
+        ax.set(xlabel="$r_p$", ylabel="Density")
         ax.legend(fontsize=8)
 
     for idx in range(n, nrows * ncols):
@@ -122,7 +118,7 @@ def plot_mixture_scatter(u1, u2, title, output_dir, filename="fig_1d_mixture.png
     u1, u2 : ndarray
         Dependent U(0,1) draws.
     title : str
-        Plot title.
+        Unused, kept for backwards compatibility.
     output_dir : str
         Directory to save the figure.
     filename : str
@@ -137,7 +133,7 @@ def plot_mixture_scatter(u1, u2, title, output_dir, filename="fig_1d_mixture.png
     """
     fig, ax = plt.subplots(figsize=(6, 6))
     ax.scatter(u1[::5], u2[::5], s=0.3, alpha=0.2, c="purple")
-    ax.set(xlabel="$u_1$", ylabel="$u_2$", title=title,
+    ax.set(xlabel="$u_1$", ylabel="$u_2$",
            xlim=(0, 1), ylim=(0, 1))
     ax.set_aspect("equal")
     path = os.path.join(output_dir, filename)

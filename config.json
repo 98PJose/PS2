@@ -42,7 +42,7 @@
     },
 
     "exercise2": {
-        "data_path": "../crypto.xlsx",
+        "data_path": "crypto.xlsx",
         "asset_names": ["BTC", "ETH", "ADA"],
         "garch": {
             "mean": 0,

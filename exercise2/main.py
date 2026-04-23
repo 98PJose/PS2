@@ -13,7 +13,8 @@ import sys
 import numpy as np
 from scipy.stats import norm
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT_DIR)
 
 from exercise2.data import load_returns
 from exercise2.descriptive import compute_descriptive_stats
@@ -23,7 +24,9 @@ from exercise2.plotting import plot_dynamic_correlations, plot_correlation_compa
 from report_utils import TexWriter, fnum, fsig, generated_dir
 
 
-def load_config(path="config.json"):
+def load_config(path=None):
+    if path is None:
+        path = os.path.join(ROOT_DIR, "config.json")
     with open(path, "r") as f:
         return json.load(f)
 
@@ -321,7 +324,10 @@ def main():
     os.makedirs(out["figures_dir"], exist_ok=True)
 
     asset_names = ex2["asset_names"]
-    returns = load_returns(ex2["data_path"], asset_names)
+    data_path = ex2["data_path"]
+    if not os.path.isabs(data_path):
+        data_path = os.path.join(ROOT_DIR, data_path)
+    returns = load_returns(data_path, asset_names)
     print(f"Loaded {len(returns)} daily returns for {asset_names}, "
           f"{returns.index[0]} to {returns.index[-1]}\n")
 

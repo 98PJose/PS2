@@ -42,7 +42,6 @@ def plot_dynamic_correlations(rho_series, pair_labels, asset_names, dates,
     """
     n_pairs = len(pair_labels)
     fig, axes = plt.subplots(n_pairs, 1, figsize=(12, 3.5 * n_pairs), sharex=True)
-    fig.suptitle(title, fontsize=13)
 
     if n_pairs == 1:
         axes = [axes]
@@ -93,8 +92,6 @@ def plot_correlation_comparison(rho_dict, pair_labels, asset_names, dates,
     """
     n_pairs = len(pair_labels)
     fig, axes = plt.subplots(n_pairs, 1, figsize=(12, 3.5 * n_pairs), sharex=True)
-    fig.suptitle("2.3) Comparison of dynamic correlations across marginal models",
-                 fontsize=13)
 
     if n_pairs == 1:
         axes = [axes]

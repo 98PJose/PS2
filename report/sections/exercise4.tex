@@ -113,14 +113,10 @@ copula choice:
       because the option payoff (function of $S_{1T}$) decouples from the held
       asset $S_{2T}$.
 \item \emph{Student $t$ at the same $\rho=0.3$}: similar std to the Gaussian
-      case, but kurtosis rises thanks to the
-      tail dependence injected by $\nu=5$. The protective put inherits a
-      heavier upper tail.
+      case, but kurtosis rises thanks to  $\nu=5$. The protective put inherits a heavier upper tail.
 \item \emph{Clayton $\theta=10$}: lower-tail dependence collapses
       \code{cc2} std back to the single-asset level -- when $S_{1T}$ is small,
       $S_{2T}$ is also small with high probability. Skew flips sign because
       the call's truncation no longer captures the asset-2 upside
       symmetrically.
 \end{itemize}
-The numbers replicate the slide-pages 16--19, validating both the
-Black--Scholes routine and the copula simulators.

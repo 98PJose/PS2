@@ -82,9 +82,17 @@ class TexWriter:
     def cmd(self, name: str, body: str) -> None:
         """Emit ``\newcommand{\name}{body}``.
 
-        ``body`` is passed through untouched, so callers are responsible for
-        any math-mode delimiters. Pair with :func:`fnum` etc.
+        Scalar macros are meant to be used inside section math mode like
+        ``$\hat\rho=\MyMacro$``, so any surrounding ``$...$`` delimiters
+        (added by :func:`fnum` / :func:`fpct` / :func:`fsig`) are stripped
+        to avoid nested math. Pair with :meth:`body` for table cells where
+        each entry must carry its own delimiters.
         """
+        stripped = body.strip()
+        if len(stripped) >= 2 and stripped.startswith("$") and stripped.endswith("$"):
+            inner = stripped[1:-1]
+            if "$" not in inner:
+                body = inner
         self._lines.append(r"\newcommand{\%s}{%s}" % (name, body))
 
     # -- multi-line body macros (for tabular / centerline lists) --

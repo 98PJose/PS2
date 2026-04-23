@@ -52,13 +52,10 @@ def plot_failure_rates(results, alphas, figures_dir, dpi=150):
         ax.set_xticks(x)
         ax.set_xticklabels(thetas)
         ax.set_ylabel("empirical failure rate")
-        ax.set_title(f"{int((1 - a) * 100)}% VaR (alpha = {a:.0%})")
         ax.grid(alpha=0.3, axis="y")
         ax.legend(fontsize=9)
 
-    fig.suptitle("Exercise 5 — Kupiec failure rates under Clayton DGP "
-                 "(* reject 95%, ** reject 99%)", fontsize=12)
-    fig.tight_layout(rect=[0, 0, 1, 0.94])
+    fig.tight_layout()
     out = os.path.join(figures_dir, "fig_5_failure_rates.png")
     fig.savefig(out, dpi=dpi)
     plt.close(fig)

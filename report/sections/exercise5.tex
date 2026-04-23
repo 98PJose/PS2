@@ -4,8 +4,7 @@ copula misspecification}\label{sec:ex5}
 % =====================================================================
 
 We replicate Section~3.1 of Berger (2016) restricted to a Clayton DGP. The
-goal is to quantify how copula misspecification distorts VaR coverage. The
-implementation is in \file{exercise5/} (driver \file{exercise5/main.py}).
+goal is to quantify how copula misspecification distorts VaR.
 
 % ---------------------------------------------------------------
 \subsection{Simulation design}
@@ -16,7 +15,7 @@ Each of $R=\ExFiveNrep$ Monte-Carlo replications proceeds in five steps:
 \begin{enumerate}\setlength\itemsep{0pt}
 \item \textbf{DGP.} Draw $T+1=\ExFiveNobs+1$ pairs $(U_{1t},U_{2t})$ from a
       Clayton copula with $\theta\in\{0.5,1.5,2.5\}$ and set
-      $r_{it}=\Phi^{-1}(U_{it})$.
+      $r_{it}=\Phi^{-1}(U_{it})$. The additional $+1$ observation is kept for the backtest but not used in the estimation.
 \item \textbf{In-sample fit.} On observations $1\ldots T=\ExFiveNobs$ estimate
       three competing copula families (Gaussian, $t$, Clayton) treating the
       $\mathcal{N}(0,1)$ marginals as known.
@@ -39,7 +38,7 @@ Each of $R=\ExFiveNrep$ Monte-Carlo replications proceeds in five steps:
 \paragraph{Estimation details.}
 Marginals are fixed at $\mathcal{N}(0,1)$, so the IFM step collapses to a
 direct copula MLE on $u_{it}=\Phi(r_{it})$. The Gaussian copula uses
-\eqref{eq:gauss-cop-ll} (Brent), the $t$-copula uses \eqref{eq:t-cop-ll}
+\eqref{eq:gauss-cop-ll}, the $t$-copula uses \eqref{eq:t-cop-ll}
 with the reparameterisation $\rho=\tanh\xi$, $\nu=2+e^\lambda$ (unconstrained
 Nelder--Mead). For the Clayton copula we use the closed-form bivariate density
 \[

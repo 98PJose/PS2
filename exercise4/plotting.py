@@ -30,7 +30,7 @@ def plot_strategy_statistics(K, stats_by_strategy, title_suffix, filename, figur
     stats_by_strategy : dict
         {strategy_name -> {"mean": .., "std": .., "skew": .., "kurt": ..}}
     title_suffix : str
-        Appended to each panel title (e.g. "Gaussian copula, rho = 0.9").
+        Unused, kept for backwards compatibility.
     filename : str
         Output filename (saved in ``figures_dir``).
     """
@@ -51,12 +51,10 @@ def plot_strategy_statistics(K, stats_by_strategy, title_suffix, filename, figur
         ax.set_xlim(K[0], K[-1])
         ax.set_xlabel("Exercise price, K")
         ax.set_ylabel(ylabel)
-        ax.set_title(f"Option strategy: {subtitle}")
         ax.grid(alpha=0.3)
         ax.legend(fontsize=9)
 
-    fig.suptitle(f"Option-based portfolios — {title_suffix}", fontsize=13)
-    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    fig.tight_layout()
     out = os.path.join(figures_dir, filename)
     fig.savefig(out, dpi=dpi)
     plt.close(fig)

@@ -37,26 +37,21 @@ def plot_quantile_curves(u2_grid, q_values, pi, rho1, rho2, figures_dir, dpi=150
         axes[0].plot(u2_grid, u1, color=color, lw=1.8, label=f"q = {q:g}")
         axes[1].plot(r2_grid, norm.ppf(u1), color=color, lw=1.8, label=f"q = {q:g}")
 
-    title = rf"NM copula quantile curves  ($\pi={pi}$, $\rho_1={rho1}$, $\rho_2={rho2}$)"
-    fig.suptitle(title)
-
     axes[0].set_xlabel(r"$u_2$")
     axes[0].set_ylabel(r"$u_1$")
     axes[0].set_xlim(0, 1)
     axes[0].set_ylim(0, 1)
-    axes[0].set_title("Unit-square scale")
     axes[0].grid(alpha=0.3)
     axes[0].legend(loc="best", fontsize=9)
 
     axes[1].set_xlabel(r"$r_2 = \Phi^{-1}(u_2)$")
     axes[1].set_ylabel(r"$r_1 = \Phi^{-1}(u_1)$")
-    axes[1].set_title("N(0,1) return scale")
     axes[1].grid(alpha=0.3)
     axes[1].axhline(0, color="k", lw=0.5)
     axes[1].axvline(0, color="k", lw=0.5)
     axes[1].legend(loc="best", fontsize=9)
 
-    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.tight_layout()
     out = os.path.join(figures_dir, "fig_3_nm_quantile_curves.png")
     fig.savefig(out, dpi=dpi)
     plt.close(fig)
