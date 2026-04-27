@@ -95,5 +95,20 @@
         "base_seed": 5001,
         "n_jobs": 1,
         "notes": "Berger (2016) runs n_rep = 10000; we default to 1000 for runtime"
+    },
+
+    "exercise6": {
+        "Rf_annual":     0.05,
+        "mu_annual":     0.10,
+        "sigma_annual":  0.20,
+        "freq_per_year": 12,
+        "zeta_grid":     [-0.010, -0.005, 0.000, 0.005, 0.010],
+        "rho_grid":      [-0.25,  0.00,   0.25,  0.50],
+        "n_obs":         2000000,
+        "base_seed":     6001,
+        "sample_path_n": 240,
+        "sample_path_rho": 0.25,
+        "sample_path_zeta": 0.0,
+        "notes": "Reproduces Lo (2007) Table 1: monthly Rf=mu_annual/12, mu=mu_annual/12, Var=sigma_annual^2/12. Two million obs keeps the MC error below 0.1% (annualized)."
     }
 }

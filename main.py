@@ -33,7 +33,7 @@ REPORT_DIR = ROOT / "report"
 REPORT_TEX = "main.tex"
 REPORT_PDF = "main.pdf"
 
-EXERCISES = (1, 2, 3, 4, 5)
+EXERCISES = (1, 2, 3, 4, 5, 6)
 
 
 # ---------------------------------------------------------------------------

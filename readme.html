@@ -23,7 +23,7 @@
 <h1>Modeling Risk — Problem Set 2026</h1>
 <p><strong>Course:</strong> Modeling Risk &mdash; Problem Set 2026<br>
 <strong>Language:</strong> Python 3.10+<br>
-<strong>Last updated:</strong> 2026-04-15 (LaTeX report added)</p>
+<strong>Last updated:</strong> 2026-04-27 (Exercise 6 — Lo (2007) stop-loss policy added)</p>
 
 <h2>1. Project Structure</h2>
 <pre>
@@ -71,6 +71,14 @@ PS2/
 │   ├── simulation.py        # Monte-Carlo driver across replications
 │   ├── plotting.py          # Grouped bar chart of empirical failure rates
 │   └── main.py              # Orchestrator: runs 5
+├── exercise6/
+│   ├── __init__.py
+│   ├── dgp.py               # AR(1) sampler started in stationary distribution (eq. 23)
+│   ├── policy.py            # Stop-loss switch omega_t and R_pt (eqs. 24–25)
+│   ├── theory.py            # Closed-form E[R_pt] and AP decomposition (eq. 26)
+│   ├── simulation.py        # Monte-Carlo driver across the (rho, zeta) grid
+│   ├── plotting.py          # Table-1 grid figure + sample-path figure
+│   └── main.py              # Orchestrator: runs 6
 ├── figures/                 # Output directory for generated plots
 ├── report_utils.py          # TexWriter + number formatters used by all main.py emitters
 └── report/                  # LaTeX write-up
@@ -80,13 +88,15 @@ PS2/
     │   ├── ex2.tex          # \ExTwo... macros (descriptives, DCC estimates)
     │   ├── ex3.tex          # \ExThree... macros (NM quantile table)
     │   ├── ex4.tex          # \ExFour... macros (ATM option-portfolio table)
-    │   └── ex5.tex          # \ExFive... macros (breach rates, fitted params)
+    │   ├── ex5.tex          # \ExFive... macros (breach rates, fitted params)
+    │   └── ex6.tex          # \ExSix...  macros (Lo Table 1: theory + simulated)
     └── sections/
         ├── exercise1.tex    # Copula simulation, IFM/CML estimation
         ├── exercise2.tex    # GARCH/GJR + DCC on crypto returns
         ├── exercise3.tex    # NM copula q-quantile curves
         ├── exercise4.tex    # Option-based portfolios under alternative copulas
-        └── exercise5.tex    # Berger (2016) replication, Kupiec backtest
+        ├── exercise5.tex    # Berger (2016) replication, Kupiec backtest
+        └── exercise6.tex    # Lo (2007) stop-loss policy: eq. (26) verification
 </pre>
 
 <h2>1.bis. LaTeX Report</h2>
@@ -633,6 +643,102 @@ LR<sub>UC</sub> = &minus;2 ln[(1 &minus; p)<sup>T&minus;N</sup> p<sup>N</sup>] +
 cd PS2
 python -m exercise5.main
 </pre>
+
+<hr>
+
+<h1 id="exercise6">Exercise 6 — Lo (2007) Stop-Loss Policy: Verification of Equation (26)</h1>
+
+<h2>25. Exercise 6 Project Structure</h2>
+<pre>
+exercise6/
+├── __init__.py
+├── dgp.py            # AR(1) simulator started in the stationary distribution (eq. 23)
+├── policy.py         # Stop-loss switch omega_t and combined return R_pt (eqs. 24–25)
+├── theory.py         # Closed-form E[R_pt] from eq. (26) and AP decomposition
+├── simulation.py     # Monte-Carlo driver across the (rho, zeta) grid of Lo Table 1
+├── plotting.py       # Two figures: Table 1 grid + illustrative sample path
+└── main.py           # Orchestrator: runs 6
+</pre>
+
+<h2>26. Background</h2>
+<p>Lo (2007), <em>"Where Do Alphas Come From? A Measure of the Value of Active Investment Management"</em>, decomposes the expected portfolio return of any past-information-only policy into an <strong>active</strong> component (covariance between weights and returns) and a <strong>passive</strong> component (weighted average of asset means). For the stop-loss strategy of Section 4.3, the data-generating process is</p>
+<div class="eq">
+<strong>Eq. (23)</strong>: R<sub>t</sub> = μ + ρ (R<sub>t-1</sub> − μ) + ε<sub>t</sub>, &nbsp; ε<sub>t</sub> ~ IID N(0, σ<sub>ε</sub><sup>2</sup>)<br>
+<strong>Eq. (24)</strong>: ω<sub>t</sub> = 1 if R<sub>t-1</sub> &gt; ζ, &nbsp; 0 otherwise<br>
+<strong>Eq. (25)</strong>: R<sub>pt</sub> = ω<sub>t</sub> R<sub>t</sub> + (1 − ω<sub>t</sub>) R<sub>f</sub>
+</div>
+<p>Lo's <strong>equation (26)</strong> derives the closed-form expectation under Gaussian innovations, with σ<sup>2</sup> = σ<sub>ε</sub><sup>2</sup>/(1 − ρ<sup>2</sup>) the unconditional variance:</p>
+<div class="eq">
+<strong>Eq. (26)</strong>: E[R<sub>pt</sub>] = <span style="color:#a00;">ρ σ φ((ζ − μ)/σ)</span> + <span style="color:#080;">μ (1 − Φ((ζ − μ)/σ)) + R<sub>f</sub> Φ((ζ − μ)/σ)</span>
+<br><br>
+where the red term is the <strong>active</strong> component and the green terms are the <strong>passive</strong> component.
+</div>
+<p>The exercise asks us to <strong>verify</strong> equation (26) by Monte-Carlo simulation and compare the simulated entries with Lo's <strong>Table 1</strong>.</p>
+
+<h2>27. Exercise 6 Module Documentation</h2>
+
+<h3>27.1 <code>dgp.py</code> — AR(1) Simulator</h3>
+<p><code>simulate_ar1(n_obs, mu, rho, sigma, rng)</code> draws <em>n_obs</em> consecutive observations of <strong>eq. (23)</strong> with the stationary initial condition R<sub>0</sub> ~ N(μ, σ<sup>2</sup>) so no burn-in is needed. The argument <code>sigma</code> is the <em>unconditional</em> standard deviation of R<sub>t</sub>; the innovation sd σ<sub>ε</sub> = σ √(1 − ρ<sup>2</sup>) is computed inside.</p>
+
+<h3>27.2 <code>policy.py</code> — Stop-Loss Switch</h3>
+<p><code>apply_stop_loss(R, zeta, R_f)</code> implements <strong>eqs. (24)–(25)</strong>: it constructs ω<sub>t</sub> = 𝟙{R<sub>t-1</sub> &gt; ζ} on the lagged series and returns the portfolio return R<sub>p</sub>, the indicator ω, and R<sub>t</sub> aligned at date <em>t</em> so the AP decomposition Cov[ω, R] + E[ω]E[R] + (1 − E[ω])R<sub>f</sub> can be computed by sample moments.</p>
+
+<h3>27.3 <code>theory.py</code> — Closed-Form Eq. (26)</h3>
+<p><code>expected_return_closed_form(mu, rho, sigma, zeta, R_f)</code> evaluates equation (26) and returns a dict with <code>{E_Rp, active, passive, E_omega, pct_active}</code>. The active term is computed analytically using the truncated-Normal identity E[(R<sub>t-1</sub> − μ) ω<sub>t</sub>] = σ φ((ζ − μ)/σ).</p>
+
+<h3>27.4 <code>simulation.py</code> — Monte-Carlo Driver</h3>
+<p><code>run_grid(...)</code> iterates over the (ρ, ζ) grid of Lo's Table 1, deriving an independent seed per cell from the configured base seed. For each cell it returns <strong>both</strong> the simulated AP decomposition (Lo's identity 22a applied to sample moments) and the closed-form prediction, plus a Monte-Carlo standard error for E[R<sub>pt</sub>].</p>
+
+<h3>27.5 <code>plotting.py</code> — Figures</h3>
+<table>
+<tr><th>Function</th><th>Output</th></tr>
+<tr><td><code>plot_table1(...)</code></td><td><code>fig_6_table1.png</code> — for each ρ, plots the closed-form active / passive / total components vs. ζ; markers overlay the simulated counterparts with 95% MC bands. Visual confirmation of eq. (26).</td></tr>
+<tr><td><code>plot_sample_path(...)</code></td><td><code>fig_6_sample_path.png</code> — one illustrative AR(1) path with the stop-loss-switching periods (ω = 0) shaded.</td></tr>
+</table>
+
+<h3>27.6 <code>main.py</code> — Orchestrator</h3>
+<p>Loads the <code>exercise6</code> block of <code>config.json</code>, runs the closed-form + simulation grid, prints two console tables (theoretical and simulated, both annualized), saves the plain-text dump <code>figures/tab_6_table1.txt</code>, generates the figures, and writes the LaTeX macros to <code>report/generated/ex6.tex</code> via <code>TexWriter</code>.</p>
+
+<h2>28. Configuration — Exercise 6 Block</h2>
+<table>
+<tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>Rf_annual</code></td><td>0.05</td><td>Annual risk-free rate (5%); divided by <code>freq_per_year</code> for monthly use.</td></tr>
+<tr><td><code>mu_annual</code></td><td>0.10</td><td>Annual mean of R<sub>t</sub> (10%).</td></tr>
+<tr><td><code>sigma_annual</code></td><td>0.20</td><td>Annual standard deviation of R<sub>t</sub> (20%); monthly sd is σ<sub>annual</sub>/√12.</td></tr>
+<tr><td><code>freq_per_year</code></td><td>12</td><td>Sampling frequency (monthly in Lo Table 1).</td></tr>
+<tr><td><code>rho_grid</code></td><td>[−0.25, 0.00, 0.25, 0.50]</td><td>AR(1) coefficients (Lo Table 1 rows).</td></tr>
+<tr><td><code>zeta_grid</code></td><td>[−1%, −0.5%, 0%, 0.5%, 1%]</td><td>Stop-loss thresholds (Lo Table 1 rows within each ρ block).</td></tr>
+<tr><td><code>n_obs</code></td><td>2 000 000</td><td>Simulation length per cell. Keeps the MC standard error of E[R<sub>pt</sub>] well below 0.1% (annualized).</td></tr>
+<tr><td><code>base_seed</code></td><td>6001</td><td>Reproducibility seed; cell <em>k</em> uses <code>base_seed + k</code>.</td></tr>
+<tr><td><code>sample_path_n / rho / zeta</code></td><td>240 / 0.25 / 0.0</td><td>Parameters of the illustrative path drawn for <code>fig_6_sample_path.png</code>.</td></tr>
+</table>
+
+<h2>29. Reading Lo's Table 1</h2>
+<p>All entries are <strong>annualized</strong> (×12) and shown to one decimal place. The columns are:</p>
+<ul>
+<li><strong>E[R<sub>pt</sub>]</strong> — annualized expected portfolio return.</li>
+<li><strong>Active</strong> — the term ρ σ φ((ζ−μ)/σ) (annualized). Same sign as ρ.</li>
+<li><strong>Passive</strong> — the convex combination μ·E[ω] + R<sub>f</sub>·(1−E[ω]) (annualized).</li>
+<li><strong>%Active</strong> — Active / E[R<sub>pt</sub>] expressed in percent.</li>
+<li><strong>E[ω]</strong> — fraction of time invested in the strategy = P(R<sub>t-1</sub> &gt; ζ) = 1 − Φ((ζ−μ)/σ).</li>
+<li><strong>1 − E[ω]</strong> — fraction of time parked in R<sub>f</sub>.</li>
+</ul>
+<div class="note">
+<strong>Sanity check:</strong> with ρ = 0 the active column is exactly zero — when returns are i.i.d., past returns carry no information about future returns and any policy is purely passive. The %Active column on the simulation side fluctuates around 0 within Monte-Carlo noise.
+</div>
+
+<h2>30. Usage</h2>
+<pre>
+cd PS2
+python -m exercise6.main
+</pre>
+<p>Outputs after a successful run:</p>
+<ul>
+<li><code>figures/tab_6_table1.txt</code> — plain-text dump of the closed-form and simulated tables.</li>
+<li><code>figures/fig_6_table1.png</code> — closed-form curves with simulated overlay.</li>
+<li><code>figures/fig_6_sample_path.png</code> — illustrative AR(1) path with stop-loss switches.</li>
+<li><code>report/generated/ex6.tex</code> — auto-generated LaTeX macros (table bodies and scalars consumed by <code>report/sections/exercise6.tex</code>).</li>
+</ul>
 
 </body>
 </html>

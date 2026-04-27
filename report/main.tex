@@ -21,6 +21,7 @@
 \usepackage[a4paper,margin=2.4cm]{geometry}
 \usepackage{setspace}
 \usepackage{parskip}
+\usepackage{tocloft}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{multirow}
@@ -31,6 +32,15 @@
   group-separator={\,},
   output-decimal-marker={.}
 }
+
+% Keep TOC compact when parskip is enabled in body text
+\setlength{\cftparskip}{0pt}
+\setlength{\cftbeforesecskip}{1pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\renewcommand{\cftsecfont}{\small}
+\renewcommand{\cftsecpagefont}{\small}
+\renewcommand{\cftsubsecfont}{\small}
+\renewcommand{\cftsubsecpagefont}{\small}
 
 % ---------- Floats ----------
 \usepackage{graphicx}
@@ -101,6 +111,7 @@
 \input{generated/ex3.tex}
 \input{generated/ex4.tex}
 \input{generated/ex5.tex}
+\input{generated/ex6.tex}
 
 % ---------- Title ----------
 \title{\bfseries Modeling Risk --- Homework 2026\\[2pt]}
@@ -110,9 +121,10 @@
 \begin{document}
 \maketitle
 
-\tableofcontents
+{\begingroup\setlength{\parskip}{0pt}\small\tableofcontents\endgroup}
 \bigskip\hrule
 
+\newpage
 % ---------------------------------------------------------------------
 \section{Introduction and notation}\label{sec:intro}
 % ---------------------------------------------------------------------
@@ -149,6 +161,7 @@ Folder & Content\\
 \file{exercise3/} & NM-copula conditional CDF and $q$-quantile inversion\\
 \file{exercise4/} & Black--Scholes pricing + option-based portfolio simulation\\
 \file{exercise5/} & Clayton DGP, copula MLE, Kupiec backtest\\
+\file{exercise6/} & Lo (2007) stop-loss policy, eq.~(26) verification\\
 \file{config.json} & All numerical parameters consumed by every \code{main.py}\\
 \file{figures/} & Generated figures and saved tables\\
 \file{report/} & This LaTeX document\\
@@ -171,6 +184,7 @@ python -m exercise2.main
 python -m exercise3.main
 python -m exercise4.main
 python -m exercise5.main
+python -m exercise6.main
 \end{lstlisting}
 
 % ---------------------------------------------------------------------
@@ -184,6 +198,8 @@ python -m exercise5.main
 \input{sections/exercise4.tex}
 \newpage
 \input{sections/exercise5.tex}
+\newpage
+\input{sections/exercise6.tex}
 % ---------------------------------------------------------------------
 
 \section{Concluding remarks}\label{sec:conclusion}
@@ -217,6 +233,15 @@ python -m exercise5.main
       directly into VaR-coverage failures}. The Clayton model (correctly
       specified) achieves nominal coverage; Gaussian and $t$ copulas reject
       the Kupiec test repeatedly at the 99\% level even at moderate dependence.
+\item Exercise~\ref{sec:ex6} verifies Lo's (2007) closed-form
+      equation~(26) for the expected return of a stop-loss-modified
+      AR(1) portfolio. The Monte-Carlo experiment matches Lo's
+      Table~1 to one decimal place across the entire
+      $(\rho,\zeta)$ grid, with a maximum deviation of $\ExSixMaxDiff\%$
+      (annualised). The active component is positive only under
+      momentum ($\rho>0$): with $\rho=+50\%$ the stop-loss adds up to
+      $13.8\%$ to the annualised return, while at $\rho=-25\%$ it
+      destroys roughly $7\%$ regardless of the threshold.
 \end{enumerate}
 
 \bigskip
@@ -224,6 +249,9 @@ python -m exercise5.main
 \begin{itemize}\setlength\itemsep{0pt}
 \item Berger, T. (2016). \emph{Forecasting value-at-risk using time varying copulas
       and EVT return distributions}. Economic Modelling, 58.
+\item Lo, A. W. (2007). \emph{Where Do Alphas Come From? A Measure of the
+      Value of Active Investment Management}. Journal of Investment
+      Management, 6(2).
 \item Course slides: \emph{Copula} and \emph{Option-based portfolios}.
 \item Matlab reference programs \file{ccK\_simuRet2.m}, \file{BS.m},
       \file{simuCC\_Normal.m}, \file{F1.m}, \file{F2.m}.

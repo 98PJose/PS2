@@ -1,0 +1,203 @@
+% =====================================================================
+\section{Exercise 6 -- Lo (2007) stop-loss policy: simulation check of
+equation (26)}\label{sec:ex6}
+% =====================================================================
+
+We verify equation~(26) of Lo (2007, Section~4.3) by simulation. The
+risky asset follows a stationary AR(1) process; a stop-loss rule moves the
+portfolio into the risk-free asset whenever the previous-period strategy
+return falls at or below a threshold $\zeta$. We reproduce Lo's
+\textbf{Table~1} from the closed-form expression, then generate the same
+table by Monte-Carlo simulation of equations~(23)--(25), and confirm that
+the two agree to the printed precision.
+
+% ---------------------------------------------------------------
+\subsection{Theory}
+% ---------------------------------------------------------------
+
+The strategy return is an AR(1) with Gaussian innovations,
+\begin{equation}\label{eq:lo23}
+R_t \;=\; \mu \,+\, \rho\,(R_{t-1}-\mu) \,+\, \varepsilon_t,
+\qquad \varepsilon_t \stackrel{\text{IID}}{\sim} \mathcal{N}\bigl(0,\sigma_\varepsilon^2\bigr),
+\end{equation}
+with unconditional mean $\mu$ and unconditional variance
+$\sigma^2=\sigma_\varepsilon^2/(1-\rho^2)$. The stop-loss switch
+\begin{equation}\label{eq:lo24}
+\omega_t \;=\;
+\begin{cases}
+1 & \text{if } R_{t-1}>\zeta,\\
+0 & \text{if } R_{t-1}\le\zeta,
+\end{cases}
+\end{equation}
+defines the combined portfolio return
+\begin{equation}\label{eq:lo25}
+R_{pt} \;=\; \omega_t\,R_t \;+\; (1-\omega_t)\,R_f.
+\end{equation}
+Lo's AP decomposition (his eq.~22a) reads, for any policy that depends
+only on past information,
+\[
+\E[R_{pt}] \;=\; \Cov[\omega_t,R_t] \;+\; \E[\omega_t]\,\E[R_t]
+                 \;+\; (1-\E[\omega_t])\,R_f.
+\]
+
+\paragraph{Closed form.} Under \eqref{eq:lo23}--\eqref{eq:lo25} the
+unconditional law of $R_{t-1}$ is $\mathcal{N}(\mu,\sigma^2)$ and the
+conditional mean of the strategy return is
+$\E[R_t\given R_{t-1}]=\mu+\rho(R_{t-1}-\mu)$. Letting $z\equiv(\zeta-\mu)/\sigma$,
+\[
+\E[\omega_t]=1-\Phi(z),\qquad
+\E[(R_{t-1}-\mu)\,\omega_t]
+   = \sigma\int_{z}^{\infty}\!u\,\phi(u)\,du
+   = \sigma\,\phi(z),
+\]
+so $\Cov[\omega_t,R_t]=\rho\,\E[(R_{t-1}-\mu)\,\omega_t]=\rho\sigma\,\phi(z)$.
+Substituting yields Lo's equation~(26):
+\begin{equation}\label{eq:lo26}
+\boxed{\;
+\E[R_{pt}] \;=\;
+   \underbrace{\rho\,\sigma\,\phi\!\left(\tfrac{\zeta-\mu}{\sigma}\right)}_{\text{active}}
+   \;+\;
+   \underbrace{\mu\bigl(1-\Phi(\tfrac{\zeta-\mu}{\sigma})\bigr)
+              + R_f\,\Phi(\tfrac{\zeta-\mu}{\sigma})}_{\text{passive}}.
+\;}
+\end{equation}
+The sign of the active component coincides with the sign of $\rho$: with
+momentum ($\rho>0$) the stop-loss adds value (a low past return signals a
+low future return, so switching to the risk-free is profitable); with
+mean reversion ($\rho<0$) the policy is counterproductive because the
+post-threshold rebound is exactly what the strategy gives up.
+
+% ---------------------------------------------------------------
+\subsection{Simulation design}
+% ---------------------------------------------------------------
+
+The benchmark parameters are those used in Lo's Table~1. Annualised
+inputs are $R_f=\ExSixRfPct\%$, $\E[R_t]=\ExSixMuPct\%$ and
+$\sqrt{\Var[R_t]}=\ExSixSigmaPct\%$; these are converted to monthly
+moments $\mu=\E[R_t]/12$, $R_f^{(\text{m})}=R_f/12$ and
+$\sigma=\ExSixSigmaPct\%/\sqrt{12}$. We sweep
+$\rho\in\{-25\%,0\%,25\%,50\%\}$ and
+$\zeta\in\{-1.0\%,-0.5\%,0.0\%,+0.5\%,+1.0\%\}$.
+
+For each $(\rho,\zeta)$ cell we simulate $T=\ExSixNobs$ consecutive
+realisations of \eqref{eq:lo23} (drawing $R_0$ from the stationary
+distribution), apply the switch \eqref{eq:lo24}--\eqref{eq:lo25} and
+estimate the AP decomposition by sample moments. The independent
+seeds are derived from a base seed $\ExSixSeed$. All numbers reported
+below are \emph{annualised} ($\times\ExSixFreq$) and expressed in
+percent, exactly as in Lo's Table~1.
+
+\paragraph{Implementation.}:
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+File & Role\\
+\midrule
+\file{exercise6/dgp.py}        & AR(1) sampler with stationary $R_0$\\
+\file{exercise6/policy.py}     & Stop-loss switch \eqref{eq:lo24}--\eqref{eq:lo25}\\
+\file{exercise6/theory.py}     & Closed-form \eqref{eq:lo26} and AP split\\
+\file{exercise6/simulation.py} & Monte-Carlo driver across the $(\rho,\zeta)$ grid\\
+\file{exercise6/plotting.py}   & Figures~\ref{fig:6-grid} and \ref{fig:6-path}\\
+\file{exercise6/main.py}       & Loads \file{config.json}, emits \file{ex6.tex}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ---------------------------------------------------------------
+\subsection{Closed-form replica of Lo's Table~1}
+% ---------------------------------------------------------------
+
+Table~\ref{tab:6-theory} evaluates equation~\eqref{eq:lo26} on the
+$(\rho,\zeta)$ grid -- it reproduces Lo (2007, Table~1) exactly (one
+decimal place).
+
+\begin{table}[H]\centering\small
+\caption{Closed-form measures of the value of the stop-loss policy
+(eq.~\ref{eq:lo26}). Annualised, in percent. Compare with Lo (2007),
+Table~1.}\label{tab:6-theory}
+\begin{tabular}{cc|cccccc}
+\toprule
+$\zeta$ & $\rho$ & $\E[R_{pt}]$ & Active & Passive & \%Active & $\E[\omega]$ & $1-\E[\omega]$\\
+\midrule
+\ExSixTableTheoryBody
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------
+\subsection{Monte-Carlo verification}
+% ---------------------------------------------------------------
+
+Table~\ref{tab:6-sim} reports the same six quantities estimated from
+$T=\ExSixNobs$ simulated observations per cell. The largest discrepancy
+between the closed form and the simulation, taken across the entire
+grid, is $\ExSixMaxDiff\%$ (annualised) -- well within the printed
+precision. Figure~\ref{fig:6-grid} renders the comparison graphically.
+
+\begin{table}[H]\centering\small
+\caption{Same as Table~\ref{tab:6-theory} but estimated by Monte-Carlo
+simulation of \eqref{eq:lo23}--\eqref{eq:lo25}. The active component is
+recovered as the sample $\widehat{\Cov}[\omega_t,R_t]$ following Lo's
+identity~(22a).}\label{tab:6-sim}
+\begin{tabular}{cc|cccccc}
+\toprule
+$\zeta$ & $\rho$ & $\E[R_{pt}]$ & Active & Passive & \%Active & $\E[\omega]$ & $1-\E[\omega]$\\
+\midrule
+\ExSixTableSimBody
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.98\linewidth]{fig_6_table1.png}
+\caption{For each value of $\rho$, the closed-form $\E[R_{pt}]$ (blue
+line), active component (red dashed) and passive component (green
+dashed) from~\eqref{eq:lo26} are plotted against the threshold $\zeta$.
+Markers superimpose the simulated counterparts; the vertical bars on
+$\E[R_{pt}]$ are 95\% Monte-Carlo confidence intervals. The simulation
+sits on top of the theoretical curves at every grid point.}
+\label{fig:6-grid}
+\end{figure}
+
+% ---------------------------------------------------------------
+\subsection{Discussion}
+% ---------------------------------------------------------------
+
+\begin{enumerate}\setlength\itemsep{0pt}
+\item \textbf{Sign of the active component.} The active term
+$\rho\sigma\phi((\zeta-\mu)/\sigma)$ is non-negative iff $\rho\ge 0$.
+With $\rho=-25\%$ the policy \emph{destroys} value at every threshold
+($-6.6\%$ to $-6.9\%$ annualised). With $\rho=+50\%$ it \emph{adds}
+$13.1\%$ to $13.8\%$, more than doubling the buy-and-hold return.
+The simulation reproduces this sign and magnitude exactly.
+\item \textbf{Effect of the threshold.} As $\zeta$ rises, $\Phi(z)$
+rises and $\E[\omega]$ falls (more time spent in the risk-free), so the
+passive component drifts toward $R_f$. The active component
+$\rho\sigma\phi(z)$ peaks where $z=0$, i.e.\ around
+$\zeta\approx\mu=\ExSixMuPct\%/12$. For $\rho=+50\%$ the peak is
+near $\zeta=0$, consistent with Table~\ref{tab:6-theory}.
+\item \textbf{The case $\rho=0$.} When returns are i.i.d., past returns
+carry no information for the future, hence $\Cov[\omega_t,R_t]=0$ by
+construction; the policy delivers a passive convex combination of
+$\E[R_t]$ and $R_f$ weighted by $\E[\omega]$. Both columns in our
+tables show \%Active is statistically indistinguishable from zero in
+that row.
+\end{enumerate}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\linewidth]{fig_6_sample_path.png}
+\caption{An illustrative sample path of length $T=\ExSixSamplePathN$ at
+$\rho=\ExSixSamplePathRho$, $\zeta=\ExSixSamplePathZetaPct\%$.
+Top: the AR(1) strategy return $R_t$ with the threshold $\zeta$ (red
+dashed) and risk-free rate $R_f$ (green dotted). Orange-shaded periods
+mark the dates when $\omega_t=0$ (the portfolio holds $R_f$). Bottom:
+the resulting stop-loss portfolio return $R_{pt}$, which sits at
+$R_f$ exactly during the shaded periods.}
+\label{fig:6-path}
+\end{figure}
+
+\paragraph{Conclusion.} The Monte-Carlo experiment confirms Lo's
+equation~(26) numerically across the full $(\rho,\zeta)$ grid of
+Table~1. The maximum absolute deviation between simulation and theory
+is $\ExSixMaxDiff\%$ annualised, attributable to ordinary $1/\sqrt{T}$
+sampling noise.

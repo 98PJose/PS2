@@ -43,6 +43,7 @@ def plot_copula_scatter(draws_dict, output_dir, dpi=150):
     for idx, (label, (u1, u2)) in enumerate(draws_dict.items()):
         ax = axes[idx // ncols][idx % ncols]
         ax.scatter(u1[::5], u2[::5], s=0.3, alpha=0.2)
+        ax.set_title(label, fontsize=10)
         ax.set(xlabel="$u_1$", ylabel="$u_2$",
                xlim=(0, 1), ylim=(0, 1))
         ax.set_aspect("equal")
@@ -95,6 +96,7 @@ def plot_portfolio_histograms(returns_dict, output_dir, dpi=150):
                 color="steelblue", edgecolor="none", label="Simulated")
         xg = np.linspace(mu - 4.5 * sd, mu + 4.5 * sd, 400)
         ax.plot(xg, norm.pdf(xg, mu, sd), "r-", lw=1.5, label="Normal PDF")
+        ax.set_title(label, fontsize=10)
         ax.set(xlabel="$r_p$", ylabel="Density")
         ax.legend(fontsize=8)
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.18)  22 APR 2026 18:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.18)  27 APR 2026 18:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -353,6 +353,49 @@ Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 ys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 )))
+(C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/tocloft\tocloft.s
+ty
+Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
+Package tocloft Info: The document has section divisions on input line 51.
+\cftparskip=\skip62
+\cftbeforetoctitleskip=\skip63
+\cftaftertoctitleskip=\skip64
+\cftbeforepartskip=\skip65
+\cftpartnumwidth=\skip66
+\cftpartindent=\skip67
+\cftbeforesecskip=\skip68
+\cftsecindent=\skip69
+\cftsecnumwidth=\skip70
+\cftbeforesubsecskip=\skip71
+\cftsubsecindent=\skip72
+\cftsubsecnumwidth=\skip73
+\cftbeforesubsubsecskip=\skip74
+\cftsubsubsecindent=\skip75
+\cftsubsubsecnumwidth=\skip76
+\cftbeforeparaskip=\skip77
+\cftparaindent=\skip78
+\cftparanumwidth=\skip79
+\cftbeforesubparaskip=\skip80
+\cftsubparaindent=\skip81
+\cftsubparanumwidth=\skip82
+\cftbeforeloftitleskip=\skip83
+\cftafterloftitleskip=\skip84
+\cftbeforefigskip=\skip85
+\cftfigindent=\skip86
+\cftfignumwidth=\skip87
+\c@lofdepth=\count307
+\c@lotdepth=\count308
+\cftbeforelottitleskip=\skip88
+\cftafterlottitleskip=\skip89
+\cftbeforetabskip=\skip90
+\cfttabindent=\skip91
+\cfttabnumwidth=\skip92
+
+
+Package tocloft Warning: \@starttoc has already been redefined; tocloft bailing
+ out. on input line 1156.
+
+)
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs
 .sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
@@ -366,12 +409,12 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen185
 \cmidrulekern=\dimen186
 \defaultaddspace=\dimen187
-\@cmidla=\count307
-\@cmidlb=\count308
+\@cmidla=\count309
+\@cmidlb=\count310
 \@aboverulesep=\dimen188
 \@belowrulesep=\dimen189
-\@thisruleclass=\count309
-\@lastruleclass=\count310
+\@thisruleclass=\count311
+\@lastruleclass=\count312
 \@thisrulewidth=\dimen190
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
@@ -380,35 +423,35 @@ Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 \ar@mcellbox=\box57
 \extrarowheight=\dimen192
 \NC@list=\toks34
-\extratabsurround=\skip62
-\backup@length=\skip63
+\extratabsurround=\skip93
+\backup@length=\skip94
 \ar@cellbox=\box58
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow
 .sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
-\multirow@colwidth=\skip64
-\multirow@cntb=\count311
-\multirow@dima=\skip65
+\multirow@colwidth=\skip95
+\multirow@cntb=\count313
+\multirow@dima=\skip96
 \bigstrutjot=\dimen193
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.st
 y
 Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
-\c@tracingmulticols=\count312
+\c@tracingmulticols=\count314
 \mult@box=\box59
 \multicol@leftmargin=\dimen194
-\c@unbalance=\count313
-\c@collectmore=\count314
-\doublecol@number=\count315
-\multicoltolerance=\count316
-\multicolpretolerance=\count317
+\c@unbalance=\count315
+\c@collectmore=\count316
+\doublecol@number=\count317
+\multicoltolerance=\count318
+\multicolpretolerance=\count319
 \full@width=\dimen195
 \page@free=\dimen196
 \premulticols=\dimen197
 \postmulticols=\dimen198
-\multicolsep=\skip66
-\multicolbaselineskip=\skip67
+\multicolsep=\skip97
+\multicolbaselineskip=\skip98
 \partial@page=\box60
 \last@line=\box61
 \mc@boxedresult=\box62
@@ -453,32 +496,32 @@ Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
 \@tempa=\box100
 \@tempa=\box101
 \@tempa=\box102
-\c@minrows=\count318
-\c@columnbadness=\count319
-\c@finalcolumnbadness=\count320
+\c@minrows=\count320
+\c@columnbadness=\count321
+\c@finalcolumnbadness=\count322
 \last@try=\dimen256
 \multicolovershoot=\dimen257
 \multicolundershoot=\dimen258
 \mult@nat@firstbox=\box103
 \colbreak@box=\box104
-\mc@col@check@num=\count321
-\g__mc_curr_col_int=\count322
+\mc@col@check@num=\count323
+\g__mc_curr_col_int=\count324
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/siunitx\siunitx.s
 ty
 Package: siunitx 2026-04-09 v3.5.3 A comprehensive (SI) units package
-\l__siunitx_number_uncert_offset_int=\count323
-\l__siunitx_number_exponent_fixed_int=\count324
-\l__siunitx_number_min_decimal_int=\count325
-\l__siunitx_number_min_integer_int=\count326
-\l__siunitx_number_round_precision_int=\count327
-\l__siunitx_number_lower_threshold_int=\count328
-\l__siunitx_number_upper_threshold_int=\count329
-\l__siunitx_number_group_first_int=\count330
-\l__siunitx_number_group_size_int=\count331
-\l__siunitx_number_group_min_int=\count332
-\l__siunitx_number_group_minimum_int=\count333
-\l__siunitx_compound_count_int=\count334
+\l__siunitx_number_uncert_offset_int=\count325
+\l__siunitx_number_exponent_fixed_int=\count326
+\l__siunitx_number_min_decimal_int=\count327
+\l__siunitx_number_min_integer_int=\count328
+\l__siunitx_number_round_precision_int=\count329
+\l__siunitx_number_lower_threshold_int=\count330
+\l__siunitx_number_upper_threshold_int=\count331
+\l__siunitx_number_group_first_int=\count332
+\l__siunitx_number_group_size_int=\count333
+\l__siunitx_number_group_min_int=\count334
+\l__siunitx_number_group_minimum_int=\count335
+\l__siunitx_compound_count_int=\count336
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/translations\tran
 slations.sty
@@ -508,9 +551,9 @@ Package pdftexcmds Info: \pdfdraftmode found.
 \l__siunitx_table_after_box=\box110
 \l__siunitx_table_before_dim=\dimen261
 \l__siunitx_table_carry_dim=\dimen262
-\l__siunitx_unit_tmp_int=\count335
-\l__siunitx_unit_position_int=\count336
-\l__siunitx_unit_total_int=\count337
+\l__siunitx_unit_tmp_int=\count337
+\l__siunitx_unit_position_int=\count338
+\l__siunitx_unit_total_int=\count339
 \l__siunitx_sexagesimal_tmp_dim=\dimen263
 \l__siunitx_sexagesimal_marker_box=\box111
 \l__siunitx_sexagesimal_unit_box=\box112
@@ -551,7 +594,7 @@ File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count338
+\c@float@type=\count340
 \float@exts=\toks35
 \float@box=\box113
 \@float@everytoks=\toks36
@@ -574,17 +617,17 @@ Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@hangindent=\dimen273
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count339
-\c@continuedfloat=\count340
+\c@caption@flags=\count341
+\c@continuedfloat=\count342
 Package caption Info: float package is loaded.
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaptio
 n.sty
 Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
 Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count341
+\c@subfigure=\count343
 Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count342
+\c@subtable=\count344
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref
 .sty
@@ -614,7 +657,7 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count343
+\c@section@level=\count345
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\strin
 genc.sty
@@ -622,8 +665,8 @@ Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
 \@linkdim=\dimen274
-\Hy@linkcounter=\count344
-\Hy@pagecounter=\count345
+\Hy@linkcounter=\count346
+\Hy@pagecounter=\count347
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.d
 ef
@@ -635,7 +678,7 @@ Now handling font encoding PD1 ...
 .sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count346
+\Hy@SavedSpaceFactor=\count348
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.de
 f
@@ -651,7 +694,7 @@ Package hyperref Info: Plain pages OFF on input line 4210.
 Package hyperref Info: Backreferencing OFF on input line 4215.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4462.
-\c@Hy@tempcnt=\count347
+\c@Hy@tempcnt=\count349
  (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
@@ -668,7 +711,7 @@ ntcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count348
+\Fld@menulength=\count350
 \Field@Width=\dimen276
 \Fld@charsize=\dimen277
 Package hyperref Info: Hyper figures OFF on input line 6078.
@@ -678,17 +721,17 @@ Package hyperref Info: backreferencing OFF on input line 6093.
 Package hyperref Info: Link coloring ON on input line 6096.
 Package hyperref Info: Link coloring with OCG OFF on input line 6103.
 Package hyperref Info: PDF/A mode OFF on input line 6108.
-\Hy@abspage=\count349
-\c@Item=\count350
-\c@Hfootnote=\count351
+\Hy@abspage=\count351
+\c@Item=\count352
+\c@Hfootnote=\count353
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.
 def
 File: hpdftex.def 2025-07-12 v7.01o Hyperref driver for pdfTeX
-\Fld@listcount=\count352
-\c@bookmark@seq@number=\count353
+\Fld@listcount=\count354
+\c@bookmark@seq@number=\count355
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\re
 runfilecheck.sty
@@ -701,7 +744,7 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 84.
 )
-\Hy@SectionHShift=\skip68
+\Hy@SectionHShift=\skip99
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/cleveref\cleveref
 .sty
@@ -744,17 +787,17 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings
 .sty
-\lst@mode=\count354
+\lst@mode=\count356
 \lst@gtempboxa=\box115
 \lst@token=\toks37
-\lst@length=\count355
+\lst@length=\count357
 \lst@currlwidth=\dimen278
-\lst@column=\count356
-\lst@pos=\count357
+\lst@column=\count358
+\lst@pos=\count359
 \lst@lostspace=\dimen279
 \lst@width=\dimen280
-\lst@newlines=\count358
-\lst@lineno=\count359
+\lst@newlines=\count360
+\lst@lineno=\count361
 \lst@maxwidth=\dimen281
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch
@@ -764,8 +807,8 @@ File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.
 sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
-\c@lstnumber=\count360
-\lst@skipnumbers=\count361
+\c@lstnumber=\count362
+\lst@skipnumbers=\count363
 \lst@framebox=\box116
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings
@@ -785,13 +828,13 @@ Package: listings 2025/11/14 1.11b (Carsten Heinz)
 .sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 )
-\c@prop=\count362
-\c@remark=\count363
-\c@defn=\count364
+\c@prop=\count364
+\c@remark=\count365
+\c@defn=\count366
  (generated/ex1.tex) (generated/ex2.tex) (generated/ex3.tex)
-(generated/ex4.tex) (generated/ex5.tex)
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 11
-0.
+(generated/ex4.tex) (generated/ex5.tex) (generated/ex6.tex)
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 12
+1.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
@@ -799,35 +842,35 @@ File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backe
 nd-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count365
+\l__color_backend_stack_int=\count367
 ) (main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Info: Redefining \microtypecontext on input line 110.
-Package microtype Info: Applying patch `item' on input line 110.
-Package microtype Info: Applying patch `toc' on input line 110.
-Package microtype Info: Applying patch `eqnum' on input line 110.
-Package microtype Info: Applying patch `footnote' on input line 110.
-Package microtype Info: Applying patch `verbatim' on input line 110.
-LaTeX Info: Redefining \microtypesetup on input line 110.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Info: Redefining \microtypecontext on input line 121.
+Package microtype Info: Applying patch `item' on input line 121.
+Package microtype Info: Applying patch `toc' on input line 121.
+Package microtype Info: Applying patch `eqnum' on input line 121.
+Package microtype Info: Applying patch `footnote' on input line 121.
+Package microtype Info: Applying patch `verbatim' on input line 121.
+LaTeX Info: Redefining \microtypesetup on input line 121.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -885,21 +928,21 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 110.
+or `english'. on input line 121.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-
 pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count366
+\scratchcounter=\count368
 \scratchdimen=\dimen282
 \scratchbox=\box117
-\nofMPsegments=\count367
-\nofMParguments=\count368
+\nofMPsegments=\count369
+\nofMParguments=\count370
 \everyMPshowfont=\toks38
-\MPscratchCnt=\count369
+\MPscratchCnt=\count371
 \MPscratchDim=\dimen283
-\MPnumerator=\count370
-\makeMPintoPDFobject=\count371
+\MPnumerator=\count372
+\makeMPintoPDFobject=\count373
 \everyMPtoPDFconversion=\toks39
 )
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epst
@@ -916,43 +959,43 @@ Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring ON on input line 110.
+Package hyperref Info: Link coloring ON on input line 121.
  (main.out) (main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-\c@lstlisting=\count372
+\c@lstlisting=\count374
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-12.
+23.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-12.
+23.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-112.
+123.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-112.
+123.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 112.
+(Font)              <12> on input line 123.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 112.
+(Font)              <8> on input line 123.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 112.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 112
+(Font)              <6> on input line 123.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 123
 .
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
@@ -962,7 +1005,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 112
+LaTeX Font Info:    Trying to load font information for U+msb on input line 123
 .
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -973,7 +1016,11 @@ cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) (main.toc
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 6.
+(Font)              <10> on input line 2.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 2.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 2.
 )
 \tf@toc=\write4
 \openout4 = `main.toc'.
@@ -984,8 +1031,10 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 s/Pedro José/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Us
 ers/Pedro José/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}
 ]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.95> on input line 132.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-40.
+52.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
@@ -994,12 +1043,6 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 143.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 143.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 143.
 
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1
 .sty
@@ -1022,16 +1065,16 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 9
 (C:\Users\Pedro José\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<../figures/fig_1a_scatter.png, id=201, 1046.4696pt x 641.7576pt>
+<../figures/fig_1a_scatter.png, id=230, 1035.3882pt x 640.794pt>
 File: ../figures/fig_1a_scatter.png Graphic file (type png)
 <use ../figures/fig_1a_scatter.png>
 Package pdftex.def Info: ../figures/fig_1a_scatter.png  used on input line 113.
 
-(pdftex.def)             Requested size: 437.88684pt x 268.53752pt.
+(pdftex.def)             Requested size: 437.88684pt x 270.99919pt.
 
 [4{C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1
 .enc}]
-<../figures/fig_1b_histograms.png, id=216, 1076.3412pt x 640.3122pt>
+<../figures/fig_1b_histograms.png, id=245, 1076.3412pt x 640.3122pt>
 File: ../figures/fig_1b_histograms.png Graphic file (type png)
 <use ../figures/fig_1b_histograms.png>
 Package pdftex.def Info: ../figures/fig_1b_histograms.png  used on input line 1
@@ -1051,7 +1094,7 @@ Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/8'
 (microtype)             (new value: 8.0pt) on input line 171.
 Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/6'
 (microtype)             (new value: 6.0pt) on input line 171.
-<../figures/fig_1d_mixture.png, id=234, 392.667pt x 382.0674pt>
+<../figures/fig_1d_mixture.png, id=263, 392.667pt x 382.0674pt>
 File: ../figures/fig_1d_mixture.png Graphic file (type png)
 <use ../figures/fig_1d_mixture.png>
 Package pdftex.def Info: ../figures/fig_1d_mixture.png  used on input line 204.
@@ -1066,27 +1109,27 @@ Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/5'
 (microtype)             (new value: 5.0pt) on input line 17.
 
 [9]
-<../figures/fig_2_2a_dcc_edf.png, id=273, 858.5676pt x 750.6444pt>
+<../figures/fig_2_2a_dcc_edf.png, id=302, 858.5676pt x 750.6444pt>
 File: ../figures/fig_2_2a_dcc_edf.png Graphic file (type png)
 <use ../figures/fig_2_2a_dcc_edf.png>
 Package pdftex.def Info: ../figures/fig_2_2a_dcc_edf.png  used on input line 11
 0.
 (pdftex.def)             Requested size: 391.79755pt x 342.54022pt.
  [10 <../figures/fig_2_2a_dcc_edf.png>]
-<../figures/fig_2_2b_dcc_garch.png, id=286, 858.5676pt x 750.6444pt>
+<../figures/fig_2_2b_dcc_garch.png, id=315, 858.5676pt x 750.6444pt>
 File: ../figures/fig_2_2b_dcc_garch.png Graphic file (type png)
 <use ../figures/fig_2_2b_dcc_garch.png>
 Package pdftex.def Info: ../figures/fig_2_2b_dcc_garch.png  used on input line 
 130.
 (pdftex.def)             Requested size: 391.79755pt x 342.54022pt.
-<../figures/fig_2_2c_dcc_gjr.png, id=288, 858.5676pt x 750.6444pt>
+<../figures/fig_2_2c_dcc_gjr.png, id=317, 858.5676pt x 750.6444pt>
 File: ../figures/fig_2_2c_dcc_gjr.png Graphic file (type png)
 <use ../figures/fig_2_2c_dcc_gjr.png>
 Package pdftex.def Info: ../figures/fig_2_2c_dcc_gjr.png  used on input line 15
 0.
 (pdftex.def)             Requested size: 391.79755pt x 342.54022pt.
  [11 <../figures/fig_2_2b_dcc_garch.png>]
-<../figures/fig_2_3_comparison.png, id=302, 858.5676pt x 750.6444pt>
+<../figures/fig_2_3_comparison.png, id=331, 858.5676pt x 750.6444pt>
 File: ../figures/fig_2_3_comparison.png Graphic file (type png)
 <use ../figures/fig_2_3_comparison.png>
 Package pdftex.def Info: ../figures/fig_2_3_comparison.png  used on input line 
@@ -1104,7 +1147,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 187.
 
-<../figures/fig_2_4_dcc_t.png, id=313, 858.5676pt x 749.6808pt>
+<../figures/fig_2_4_dcc_t.png, id=342, 858.5676pt x 749.6808pt>
 File: ../figures/fig_2_4_dcc_t.png Graphic file (type png)
 <use ../figures/fig_2_4_dcc_t.png>
 Package pdftex.def Info: ../figures/fig_2_4_dcc_t.png  used on input line 198.
@@ -1119,7 +1162,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 25.
 
-<../figures/fig_3_nm_quantile_curves.png, id=331, 867.24pt x 361.35pt>
+<../figures/fig_3_nm_quantile_curves.png, id=360, 867.24pt x 361.35pt>
 File: ../figures/fig_3_nm_quantile_curves.png Graphic file (type png)
 <use ../figures/fig_3_nm_quantile_curves.png>
 Package pdftex.def Info: ../figures/fig_3_nm_quantile_curves.png  used on input
@@ -1136,27 +1179,27 @@ Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/9'
 (microtype)             (new value: 9.0pt) on input line 70.
 
 [17]
-<../figures/fig_4_4_1_gaussian_high.png, id=367, 867.24pt x 650.43pt>
+<../figures/fig_4_4_1_gaussian_high.png, id=396, 867.24pt x 650.43pt>
 File: ../figures/fig_4_4_1_gaussian_high.png Graphic file (type png)
 <use ../figures/fig_4_4_1_gaussian_high.png>
 Package pdftex.def Info: ../figures/fig_4_4_1_gaussian_high.png  used on input 
 line 79.
 (pdftex.def)             Requested size: 437.88684pt x 328.41989pt.
-<../figures/fig_4_4_2_gaussian_low.png, id=368, 867.24pt x 650.43pt>
+<../figures/fig_4_4_2_gaussian_low.png, id=397, 867.24pt x 650.43pt>
 File: ../figures/fig_4_4_2_gaussian_low.png Graphic file (type png)
 <use ../figures/fig_4_4_2_gaussian_low.png>
 Package pdftex.def Info: ../figures/fig_4_4_2_gaussian_low.png  used on input l
 ine 84.
 (pdftex.def)             Requested size: 437.88684pt x 328.41989pt.
  [18 <../figures/fig_4_4_1_gaussian_high.png>]
-<../figures/fig_4_4_3_student_t.png, id=378, 867.24pt x 650.43pt>
+<../figures/fig_4_4_3_student_t.png, id=407, 867.24pt x 650.43pt>
 File: ../figures/fig_4_4_3_student_t.png Graphic file (type png)
 <use ../figures/fig_4_4_3_student_t.png>
 Package pdftex.def Info: ../figures/fig_4_4_3_student_t.png  used on input line
  89.
 (pdftex.def)             Requested size: 437.88684pt x 328.41989pt.
  [19 <../figures/fig_4_4_2_gaussian_low.png>]
-<../figures/fig_4_4_4_clayton.png, id=386, 867.24pt x 650.43pt>
+<../figures/fig_4_4_4_clayton.png, id=415, 867.24pt x 650.43pt>
 File: ../figures/fig_4_4_4_clayton.png Graphic file (type png)
 <use ../figures/fig_4_4_4_clayton.png>
 Package pdftex.def Info: ../figures/fig_4_4_4_clayton.png  used on input line 9
@@ -1164,28 +1207,42 @@ Package pdftex.def Info: ../figures/fig_4_4_4_clayton.png  used on input line 9
 (pdftex.def)             Requested size: 437.88684pt x 328.41989pt.
  [20 <../figures/fig_4_4_3_student_t.png>]) [21 <../figures/fig_4_4_4_clayton.p
 ng>] (sections/exercise5.tex [22]
-<../figures/fig_5_failure_rates.png, id=417, 867.24pt x 361.35pt>
+<../figures/fig_5_failure_rates.png, id=446, 867.24pt x 361.35pt>
 File: ../figures/fig_5_failure_rates.png Graphic file (type png)
 <use ../figures/fig_5_failure_rates.png>
 Package pdftex.def Info: ../figures/fig_5_failure_rates.png  used on input line
  109.
 (pdftex.def)             Requested size: 437.88684pt x 182.45549pt.
- [23 <../figures/fig_5_failure_rates.png>]) [24] (main.aux)
+ [23 <../figures/fig_5_failure_rates.png>]) [24] (sections/exercise6.tex [25] [
+26]
+<../figures/fig_6_table1.png, id=505, 1156.32pt x 303.534pt>
+File: ../figures/fig_6_table1.png Graphic file (type png)
+<use ../figures/fig_6_table1.png>
+Package pdftex.def Info: ../figures/fig_6_table1.png  used on input line 152.
+(pdftex.def)             Requested size: 451.71432pt x 118.5723pt.
+ [27 <../figures/fig_6_table1.png>]
+<../figures/fig_6_sample_path.png, id=517, 650.43pt x 397.485pt>
+File: ../figures/fig_6_sample_path.png Graphic file (type png)
+<use ../figures/fig_6_sample_path.png>
+Package pdftex.def Info: ../figures/fig_6_sample_path.png  used on input line 1
+88.
+(pdftex.def)             Requested size: 437.88684pt x 267.60544pt.
+) [28 <../figures/fig_6_sample_path.png>] [29] (main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 47C4E23149A5E232A2C0DF86B452042A;7703.
+(rerunfilecheck)             Checksum: 122F96158F4728793306AB98317E27C3;8786.
  ) 
 Here is how much of TeX's memory you used:
- 25137 strings out of 467871
- 481677 string characters out of 5415436
- 1098410 words of memory out of 5000000
- 53217 multiletter control sequences out of 15000+600000
- 759913 words of font info for 280 fonts, out of 8000000 for 9000
+ 25522 strings out of 467871
+ 487943 string characters out of 5415436
+ 1113855 words of memory out of 5000000
+ 53540 multiletter control sequences out of 15000+600000
+ 764136 words of font info for 294 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 73i,13n,80p,1003b,1342s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 73i,14n,80p,1003b,1342s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/double
 stroke/dsrom10.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/lm/lmbx10.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fo
@@ -1195,28 +1252,31 @@ ams/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/Pedro José/AppData/Local
 /Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/Pedro José/AppData
 /Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/Pedro José/A
 ppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users/Pedro Jo
-sé/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/Ped
-ro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi9.pfb><C:/User
-s/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:
-/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pf
+sé/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C:/Users/Ped
+ro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/User
+s/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi9.pfb><C:
+/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pf
 b><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr
-6.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
-/lmr7.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/publi
-c/lm/lmr8.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/lm/lmr9.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/typ
-e1/public/lm/lmri10.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fon
-ts/type1/public/lm/lmsy10.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/Pedro José/AppData/Local/Programs
-/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/Pedro José/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/Pedro José/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Users/Pedro José/AppData
-/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/Pedro José/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Users/Pedro J
-osé/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt9.pfb><C:/Users/Pe
-dro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (24 pages, 4375392 bytes).
+12.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
+m/lmr6.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/lm/lmr7.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/lm/lmr8.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/lm/lmr9.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/font
+s/type1/public/lm/lmri10.pfb><C:/Users/Pedro José/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/lm/lmsy10.pfb><C:/Users/Pedro José/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/Pedro José/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/Pedro José/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/Pedro José/AppData
+/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Users/Pedro José/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/Pedro Jo
+sé/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Users/Pe
+dro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt9.pfb><C:/Use
+rs/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
+<C:/Users/Pedro José/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
+/symbols/msbm10.pfb>
+Output written on main.pdf (29 pages, 4695161 bytes).
 PDF statistics:
- 599 PDF objects out of 1000 (max. 8388607)
- 156 named destinations out of 1000 (max. 500000)
- 75055 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 710 PDF objects out of 1000 (max. 8388607)
+ 182 named destinations out of 1000 (max. 500000)
+ 77161 words of extra memory for PDF output out of 89155 (max. 10000000)
 

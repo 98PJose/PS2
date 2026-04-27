@@ -27,7 +27,12 @@
       "Bash(python main.py --help)",
       "Bash(python main.py --only 4 --skip-latex)",
       "Bash(python main.py --only 1 2 5 --skip-latex)",
-      "Bash(python _fix_generated.py)"
+      "Bash(python _fix_generated.py)",
+      "Bash(python -m exercise6.main)",
+      "PowerShell(python --version)",
+      "PowerShell(python -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(/c/conda/miniconda3/python.exe -m exercise6.main)",
+      "Bash(/c/conda/miniconda3/python.exe main.py --only 6)"
     ]
   }
 }
