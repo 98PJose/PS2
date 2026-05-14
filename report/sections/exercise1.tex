@@ -24,7 +24,6 @@ By construction $C_2(\cdot\given u_2)$ is a CDF on $(0,1)$. The
 \[
 \boxed{\;U_2\sim\mathcal{U}(0,1),\qquad U_1\;=\;C_2^{-1}(V_1\given U_2)=V_1,\quad V_1\sim\mathcal{U}(0,1).\;}
 \]
-This is what every routine in \file{exercise1/copula\_sim.py} implements.
 
 % ---------------------------------------------------------------
 \subsection{Closed-form simulators}
@@ -171,7 +170,7 @@ Given an i.i.d. sample $\{(r_{1t},r_{2t})\}_{t=1}^T$ the Inference-Functions-for
 When $\hat F_i$ is the empirical CDF $\hat F_i(x)=\frac{1}{T+1}\sum_t \indic\{r_{it}\le x\}$
 (``EDF'' margin) we obtain the \emph{Canonical Maximum Likelihood} (CML) variant.
 
-\paragraph{Gaussian copula log-likelihood (slides eq.\,31).}
+\paragraph{Gaussian copula log-likelihood.}
 Let $\eta_t=(\Phi^{-1}\hat u_{1t},\Phi^{-1}\hat u_{2t})^\top$ and
 $\Psi=\bigl(\begin{smallmatrix}1&\rho\\\rho&1\end{smallmatrix}\bigr)$. Then
 \begin{align}
@@ -181,8 +180,6 @@ $\Psi=\bigl(\begin{smallmatrix}1&\rho\\\rho&1\end{smallmatrix}\bigr)$. Then
 &=-\tfrac12\ln(1-\rho^2)-\frac{\rho^2(\eta_{1t}^2+\eta_{2t}^2)-2\rho\eta_{1t}\eta_{2t}}{2(1-\rho^2)}.
 \label{eq:gauss-cop-ll}
 \end{align}
-We maximise $\sum_t \ln c^G$ in $\rho$ by Brent's method on $(-0.999,0.999)$
-(\code{exercise1.estimation}).
 
 \paragraph{Result.} On the Gaussian-copula sample with true $\rho=\ExOneICRhoTrue$ we obtain
 $\hat\rho=\ExOneICRhoHat$, $\ln L=\ExOneICLogLik$, with successful convergence. The
@@ -207,7 +204,7 @@ $\ExOneIDMixSpearman$, Kendall $\ExOneIDMixKendall$.
 \label{fig:1d}
 \end{figure}
 
-\paragraph{Student-$t$ copula log-likelihood (slides eq.\,38).}
+\paragraph{Student-$t$ copula log-likelihood.}
 Let $y_{it}=t_\nu^{-1}(\hat u_{it})$ and
 $Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
 \begin{align}
@@ -218,7 +215,6 @@ $Q_t=y_{1t}^2-2\rho y_{1t}y_{2t}+y_{2t}^2$. Then
 +\tfrac{\nu+1}{2}\sum_{i=1}^{2}\ln\!\Bigl(1+\tfrac{y_{it}^2}{\nu}\Bigr).
 \label{eq:t-cop-ll}
 \end{align}
-\code{exercise1.estimation.estimate\_t\_copula} maximises this by Nelder--Mead.
 
 \paragraph{Result.} The fitted t-copula returns $\hat\rho=\ExOneIDTRhoHat$,
 $\hat\nu=\ExOneIDTNuHat$, $\ln L=\ExOneIDTLogLik$. The small $\hat\nu$ is the

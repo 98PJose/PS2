@@ -85,31 +85,14 @@ distribution), apply the switch \eqref{eq:lo24}--\eqref{eq:lo25} and
 estimate the AP decomposition by sample moments. The independent
 seeds are derived from a base seed $\ExSixSeed$. All numbers reported
 below are \emph{annualised} ($\times\ExSixFreq$) and expressed in
-percent, exactly as in Lo's Table~1.
-
-\paragraph{Implementation.}:
-\begin{center}\small
-\begin{tabular}{ll}
-\toprule
-File & Role\\
-\midrule
-\file{exercise6/dgp.py}        & AR(1) sampler with stationary $R_0$\\
-\file{exercise6/policy.py}     & Stop-loss switch \eqref{eq:lo24}--\eqref{eq:lo25}\\
-\file{exercise6/theory.py}     & Closed-form \eqref{eq:lo26} and AP split\\
-\file{exercise6/simulation.py} & Monte-Carlo driver across the $(\rho,\zeta)$ grid\\
-\file{exercise6/plotting.py}   & Figures~\ref{fig:6-grid} and \ref{fig:6-path}\\
-\file{exercise6/main.py}       & Loads \file{config.json}, emits \file{ex6.tex}\\
-\bottomrule
-\end{tabular}
-\end{center}
+percent.
 
 % ---------------------------------------------------------------
 \subsection{Closed-form replica of Lo's Table~1}
 % ---------------------------------------------------------------
 
 Table~\ref{tab:6-theory} evaluates equation~\eqref{eq:lo26} on the
-$(\rho,\zeta)$ grid -- it reproduces Lo (2007, Table~1) exactly (one
-decimal place).
+$(\rho,\zeta)$ grid -- it reproduces Lo (2007, Table~1).
 
 \begin{table}[H]\centering\small
 \caption{Closed-form measures of the value of the stop-loss policy
@@ -153,11 +136,11 @@ $\zeta$ & $\rho$ & $\E[R_{pt}]$ & Active & Passive & \%Active & $\E[\omega]$ & $
 \caption{For each value of $\rho$, the closed-form $\E[R_{pt}]$ (blue
 line), active component (red dashed) and passive component (green
 dashed) from~\eqref{eq:lo26} are plotted against the threshold $\zeta$.
-Markers superimpose the simulated counterparts; the vertical bars on
-$\E[R_{pt}]$ are 95\% Monte-Carlo confidence intervals. The simulation
-sits on top of the theoretical curves at every grid point.}
+Markers superimpose the simulated counterparts.}
 \label{fig:6-grid}
 \end{figure}
+
+The simulation sits on top of the theoretical curves at every grid point
 
 % ---------------------------------------------------------------
 \subsection{Discussion}

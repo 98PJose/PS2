@@ -4,8 +4,7 @@
 
 We work with the daily log-returns of three crypto assets
 (BTC, ETH, ADA). The sample spans
-$T=\ExTwoT$ trading days from \ExTwoDateStart{} to \ExTwoDateEnd. The whole
-pipeline is in \file{exercise2/} (orchestrated by \file{exercise2/main.py}).
+$T=\ExTwoT$ trading days from \ExTwoDateStart{} to \ExTwoDateEnd. 
 
 % ---------------------------------------------------------------
 \subsection{2.1 -- Univariate descriptives and sample correlations}
@@ -35,7 +34,7 @@ kurtosis (Pearson kurtosis $\gg 3$).
 \subsection{Theoretical framework: GARCH/GJR + DCC}
 % ---------------------------------------------------------------
 
-\paragraph{Marginal volatility -- GARCH(1,1) (slides eq.\,67).}
+\paragraph{Marginal volatility -- GARCH(1,1).}
 For a zero-mean return $r_t$,
 \begin{equation}\label{eq:garch}
 r_t=\sqrt{h_t}\,z_t,\qquad
@@ -49,7 +48,7 @@ Gaussian (quasi-) MLE log-likelihood is
 \]
 We optimise by L-BFGS-B in \code{exercise2.garch.estimate\_garch}.
 
-\paragraph{Marginal volatility with leverage -- GJR(1,1) (slides eq.\,71).}
+\paragraph{Marginal volatility with leverage -- GJR(1,1).}
 \begin{equation}\label{eq:gjr}
 h_t=\omega+\bigl(\alpha+\gamma\,\indic\{r_{t-1}<0\}\bigr)r_{t-1}^{2}+\beta\,h_{t-1},
 \end{equation}
@@ -92,8 +91,7 @@ With $A(\nu)=\dfrac{\Gamma\!\bigl(\tfrac{\nu+n}{2}\bigr)\,\Gamma\!\bigl(\tfrac{\
 &\quad+\tfrac{\nu+1}{2}\sum_t\sum_{i=1}^n\ln\!\Bigl(1+\tfrac{\eta_{it}^2}{\nu}\Bigr),
 \label{eq:dcc-LL-t}
 \end{align}
-with $\eta_{it}=t_\nu^{-1}(\hat u_{it})$ obtained from the EDF margins. Both
-likelihoods are maximised by Nelder--Mead in \code{exercise2.dcc}.
+with $\eta_{it}=t_\nu^{-1}(\hat u_{it})$ obtained from the EDF margins. 
 
 % ---------------------------------------------------------------
 \subsection{2.2 -- DCC under three marginal specifications}
