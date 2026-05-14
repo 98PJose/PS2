@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.1.1] - 2026-05-14
+
+### Added
+- `README.md`: GitHub-facing Markdown documentation derived from the existing HTML README structure. It documents installation, usage, project layout, report generation, configuration blocks, all six exercise modules, scenario examples, generated outputs, and development notes.
+
 ## [6.1.0] - 2026-04-15
 
 ### Added
